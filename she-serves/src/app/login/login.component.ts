@@ -26,7 +26,7 @@ export class LoginComponent {
     }
     const { ok, message } = await this.auth.login(this.username, this.password);
     if (ok) {
-      this.router.navigate(['/registrations']);
+      this.router.navigate(['/admin']);
     } else {
       this.error.set(message);
     }

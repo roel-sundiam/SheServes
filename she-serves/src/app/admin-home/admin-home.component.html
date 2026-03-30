@@ -1,0 +1,21 @@
+<div class="page">
+  <header class="header">
+    <a routerLink="/dashboard" class="back-btn">&#8592;</a>
+    <h1 class="title">Admin Portal</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <div class="cards-wrap">
+    <a routerLink="/registrations" class="card">
+      <span class="card-icon">📋</span>
+      <span class="card-label">Registrations</span>
+      <span class="card-desc">View and manage all player registrations</span>
+    </a>
+
+    <a routerLink="/analytics" class="card">
+      <span class="card-icon">📊</span>
+      <span class="card-label">Site Analytics</span>
+      <span class="card-desc">Track visits, traffic and site performance</span>
+    </a>
+  </div>
+</div>
