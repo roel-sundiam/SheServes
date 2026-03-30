@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
@@ -10,9 +10,10 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './admin-home.component.css'
 })
 export class AdminHomeComponent {
-  isSuperAdmin = this.auth.isSuperAdmin;
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private auth: AuthService, private router: Router) {}
+  isSuperAdmin = this.auth.isSuperAdmin;
 
   logout() {
     this.auth.logout();
