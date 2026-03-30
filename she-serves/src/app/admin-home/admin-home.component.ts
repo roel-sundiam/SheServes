@@ -10,6 +10,8 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './admin-home.component.css'
 })
 export class AdminHomeComponent {
+  isSuperAdmin = this.auth.isSuperAdmin;
+
   constructor(private auth: AuthService, private router: Router) {}
 
   logout() {

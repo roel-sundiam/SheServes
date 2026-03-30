@@ -12,10 +12,12 @@
       <span class="card-desc">View and manage all player registrations</span>
     </a>
 
-    <a routerLink="/analytics" class="card">
-      <span class="card-icon">📊</span>
-      <span class="card-label">Site Analytics</span>
-      <span class="card-desc">Track visits, traffic and site performance</span>
-    </a>
+    @if (isSuperAdmin()) {
+      <a routerLink="/analytics" class="card">
+        <span class="card-icon">📊</span>
+        <span class="card-label">Site Analytics</span>
+        <span class="card-desc">Track visits, traffic and site performance</span>
+      </a>
+    }
   </div>
 </div>
