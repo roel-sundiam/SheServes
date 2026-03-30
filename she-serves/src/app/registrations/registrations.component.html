@@ -1,0 +1,48 @@
+<div class="page">
+  <header class="header">
+    <a routerLink="/dashboard" class="back-btn">&#8592;</a>
+    <h1 class="title">Registrations</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <div class="content">
+    <div class="summary-bar">
+      <span class="summary-item">Total: <strong>{{ registrations.length }}</strong></span>
+      <span class="summary-item confirmed">Confirmed: <strong>{{ confirmed }}</strong></span>
+      <span class="summary-item pending">Pending: <strong>{{ pending }}</strong></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of registrations; track r.id) {
+            <tr>
+              <td>{{ r.id }}</td>
+              <td>{{ r.name }}</td>
+              <td>{{ r.email }}</td>
+              <td>{{ r.phone }}</td>
+              <td>{{ r.category }}</td>
+              <td>{{ r.date }}</td>
+              <td>
+                <span class="badge" [class.confirmed]="r.status === 'Confirmed'" [class.pending]="r.status === 'Pending'">
+                  {{ r.status }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

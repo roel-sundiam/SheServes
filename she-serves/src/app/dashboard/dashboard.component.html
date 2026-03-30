@@ -1,0 +1,16 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <a routerLink="/" class="back-btn">&#8592;</a>
+    <h1 class="dashboard-title">SheServes</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <div class="cards-grid">
+    @for (card of cards; track card.label) {
+      <a [href]="card.route" class="card">
+        <span class="card-icon">{{ card.icon }}</span>
+        <span class="card-label">{{ card.label }}</span>
+      </a>
+    }
+  </div>
+</div>

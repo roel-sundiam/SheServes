@@ -1,0 +1,45 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1 class="login-title">SheServes</h1>
+    <p class="login-subtitle">Admin Portal</p>
+
+    <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Enter username"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="password-wrap">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter password"
+            autocomplete="current-password"
+          />
+          <button type="button" class="toggle-pw" (click)="togglePassword()">
+            {{ showPassword() ? '🙈' : '👁️' }}
+          </button>
+        </div>
+      </div>
+
+      @if (error()) {
+        <p class="error-msg">{{ error() }}</p>
+      }
+
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <a routerLink="/" class="back-link">← Back to Home</a>
+  </div>
+</div>

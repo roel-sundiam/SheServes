@@ -1,0 +1,18 @@
+<div class="carousel" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+  <a routerLink="/dashboard" class="dashboard-btn">Dashboard</a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSdlH_6Uq1BvmnIiWNOjeqMyZRlokT3MHgSTMkfdIu-vzkkPvA/viewform?pli=1" target="_blank" rel="noopener noreferrer" class="register-btn">Register</a>
+  <img [src]="images[currentIndex()].src" [alt]="images[currentIndex()].alt" class="carousel-image" />
+
+  <button class="arrow arrow-left" (click)="prev()">&#8249;</button>
+  <button class="arrow arrow-right" (click)="next()">&#8250;</button>
+
+  <div class="dots">
+    @for (img of images; track $index) {
+      <span
+        class="dot"
+        [class.active]="$index === currentIndex()"
+        (click)="goTo($index)">
+      </span>
+    }
+  </div>
+</div>
