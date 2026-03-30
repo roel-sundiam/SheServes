@@ -4,8 +4,10 @@
 
 | Field    | Value           |
 |----------|-----------------|
-| Username | `admin`         |
-| Password | `sheserves2025` |
+| Username    | Password        |
+|-------------|-----------------|
+| `admin`     | `sheserves2025` |
+| `AkVinluan` | `sheserves2025` |
 
 ## Notes
 
