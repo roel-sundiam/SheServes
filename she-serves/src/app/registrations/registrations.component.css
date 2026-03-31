@@ -7,13 +7,15 @@
   --surface: #ffffff;
   --surface-soft: #f7faf9;
   --border: #d7e5e3;
-  min-height: 100vh;
+  height: 100vh;
   position: relative;
   background:
     radial-gradient(circle at 10% 10%, #daf6f0 0%, transparent 32%),
     radial-gradient(circle at 88% 15%, #fceccc 0%, transparent 28%),
     linear-gradient(160deg, #f2f8f7 0%, #ecf5f4 55%, #e9f3f1 100%);
   color: var(--ink);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -159,6 +161,10 @@
   max-width: 1120px;
   margin: 0 auto;
   padding: 8px 20px 28px;
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .state-card {

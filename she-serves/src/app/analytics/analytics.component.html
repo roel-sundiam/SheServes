@@ -1,78 +1,107 @@
-<div class="page">
-  <header class="header">
-    <a routerLink="/admin" class="back-btn">&#8592;</a>
-    <h1 class="title">Site Analytics</h1>
+<div class="analytics-page">
+  <div class="bg-glow bg-glow-a"></div>
+  <div class="bg-glow bg-glow-b"></div>
+
+  <header class="topbar">
+    <a routerLink="/admin" class="back-btn" aria-label="Back to admin">
+      <span aria-hidden="true">&#8592;</span>
+    </a>
+
+    <div class="title-wrap">
+      <p class="eyebrow">Admin Panel</p>
+      <h1>Site Analytics</h1>
+    </div>
+
     <button class="logout-btn" (click)="logout()">Logout</button>
   </header>
 
-  <div class="content">
+  <main class="content-shell">
 
     @if (loading()) {
-      <p class="status">Loading...</p>
+      <section class="state-card">
+        <h2>Loading analytics...</h2>
+        <p>Retrieving data from the database.</p>
+      </section>
     } @else if (error()) {
-      <p class="status error">{{ error() }}</p>
+      <section class="state-card error">
+        <h2>Could not load analytics</h2>
+        <p>{{ error() }}</p>
+      </section>
     } @else {
 
-      <!-- Summary Cards -->
-      <div class="summary-grid">
+      <section class="stats-grid">
         <div class="stat-card">
-          <span class="stat-icon">🌐</span>
-          <span class="stat-value">{{ data().totalVisits }}</span>
-          <span class="stat-label">Total Visits</span>
+          <div class="stat-icon">🌐</div>
+          <div>
+            <p class="stat-label">Total Visits</p>
+            <p class="stat-value">{{ data().totalVisits }}</p>
+          </div>
         </div>
         <div class="stat-card">
-          <span class="stat-icon">👤</span>
-          <span class="stat-value">{{ data().anonymousVisits }}</span>
-          <span class="stat-label">Anonymous Visits</span>
+          <div class="stat-icon">👤</div>
+          <div>
+            <p class="stat-label">Anonymous Visits</p>
+            <p class="stat-value">{{ data().anonymousVisits }}</p>
+          </div>
         </div>
         <div class="stat-card">
-          <span class="stat-icon">🔐</span>
-          <span class="stat-value">{{ data().loggedInVisits }}</span>
-          <span class="stat-label">Logged-in Visits</span>
+          <div class="stat-icon">🔐</div>
+          <div>
+            <p class="stat-label">Logged-in Visits</p>
+            <p class="stat-value">{{ data().loggedInVisits }}</p>
+          </div>
         </div>
         <div class="stat-card">
-          <span class="stat-icon">🔑</span>
-          <span class="stat-value">{{ data().recentLogins.length }}</span>
-          <span class="stat-label">Recent Logins</span>
+          <div class="stat-icon">🔑</div>
+          <div>
+            <p class="stat-label">Recent Logins</p>
+            <p class="stat-value">{{ data().recentLogins.length }}</p>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Pages Visited -->
-      <h2 class="section-title">Pages Visited</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Page</th><th>Visits</th></tr>
-          </thead>
-          <tbody>
-            @for (p of data().visitsByPage; track p._id) {
-              <tr>
-                <td>{{ p._id }}</td>
-                <td>{{ p.count }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <section class="data-section">
+        <h2 class="section-title">Pages Visited</h2>
+        <div class="table-container">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Page</th><th>Visits</th></tr>
+              </thead>
+              <tbody>
+                @for (p of data().visitsByPage; track p._id) {
+                  <tr>
+                    <td>{{ p._id }}</td>
+                    <td>{{ p.count }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-      <!-- Recent Logins -->
-      <h2 class="section-title">Recent Admin Logins</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Username</th><th>Login Time</th></tr>
-          </thead>
-          <tbody>
-            @for (log of data().recentLogins; track log._id) {
-              <tr>
-                <td>{{ log.username }}</td>
-                <td>{{ log.loginAt | date:'medium' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <section class="data-section">
+        <h2 class="section-title">Recent Admin Logins</h2>
+        <div class="table-container">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Username</th><th>Login Time</th></tr>
+              </thead>
+              <tbody>
+                @for (log of data().recentLogins; track log._id) {
+                  <tr>
+                    <td>{{ log.username }}</td>
+                    <td>{{ log.loginAt | date:'medium' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
     }
-  </div>
+  </main>
 </div>
