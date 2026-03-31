@@ -11,7 +11,7 @@ const POLL_INTERVAL_MS = 60_000; // 60 seconds
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './registrations.component.html',
-  styleUrl: './registrations.component.css'
+  styleUrl: './registrations.component.css',
 })
 export class RegistrationsComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
@@ -19,12 +19,12 @@ export class RegistrationsComponent implements OnInit, OnDestroy {
   private registrationsService = inject(RegistrationsService);
   private pollTimer: ReturnType<typeof setInterval> | null = null;
 
-  columns     = signal<string[]>([]);
-  rows        = signal<Record<string, string>[]>([]);
-  loading     = signal(true);
-  refreshing  = signal(false);
-  error       = signal('');
-  pageSize    = signal(10);
+  columns = signal<string[]>([]);
+  rows = signal<Record<string, string>[]>([]);
+  loading = signal(true);
+  refreshing = signal(false);
+  error = signal('');
+  pageSize = signal(10);
   currentPage = signal(1);
 
   totalPages = computed(() => Math.max(1, Math.ceil(this.rows().length / this.pageSize())));
@@ -34,8 +34,12 @@ export class RegistrationsComponent implements OnInit, OnDestroy {
     return this.rows().slice(start, start + this.pageSize());
   });
 
-  startItem = computed(() => this.rows().length ? (this.currentPage() - 1) * this.pageSize() + 1 : 0);
-  endItem   = computed(() => this.rows().length ? Math.min(this.currentPage() * this.pageSize(), this.rows().length) : 0);
+  startItem = computed(() =>
+    this.rows().length ? (this.currentPage() - 1) * this.pageSize() + 1 : 0,
+  );
+  endItem = computed(() =>
+    this.rows().length ? Math.min(this.currentPage() * this.pageSize(), this.rows().length) : 0,
+  );
 
   ngOnInit() {
     this.fetchData(true);
@@ -71,7 +75,7 @@ export class RegistrationsComponent implements OnInit, OnDestroy {
         } else {
           this.refreshing.set(false);
         }
-      }
+      },
     });
   }
 
@@ -85,11 +89,11 @@ export class RegistrationsComponent implements OnInit, OnDestroy {
   }
 
   previousPage() {
-    if (this.currentPage() > 1) this.currentPage.update(p => p - 1);
+    if (this.currentPage() > 1) this.currentPage.update((p) => p - 1);
   }
 
   nextPage() {
-    if (this.currentPage() < this.totalPages()) this.currentPage.update(p => p + 1);
+    if (this.currentPage() < this.totalPages()) this.currentPage.update((p) => p + 1);
   }
 
   goToPage(page: number) {

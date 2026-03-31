@@ -13,7 +13,12 @@
     </div>
 
     <div class="header-actions">
-      <button class="refresh-btn" (click)="refresh()" [disabled]="refreshing()" title="Refresh data">
+      <button
+        class="refresh-btn"
+        (click)="refresh()"
+        [disabled]="refreshing()"
+        title="Refresh data"
+      >
         <span class="refresh-icon" [class.spinning]="refreshing()">&#8635;</span>
         {{ refreshing() ? 'Refreshing...' : 'Refresh' }}
       </button>

@@ -16,7 +16,6 @@
   </header>
 
   <main class="content-shell">
-
     @if (loading()) {
       <section class="state-card">
         <h2>Loading analytics...</h2>
@@ -28,7 +27,6 @@
         <p>{{ error() }}</p>
       </section>
     } @else {
-
       <section class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon">🌐</div>
@@ -66,7 +64,10 @@
           <div class="table-scroll">
             <table>
               <thead>
-                <tr><th>Page</th><th>Visits</th></tr>
+                <tr>
+                  <th>Page</th>
+                  <th>Visits</th>
+                </tr>
               </thead>
               <tbody>
                 @for (p of data().visitsByPage; track p._id) {
@@ -87,13 +88,16 @@
           <div class="table-scroll">
             <table>
               <thead>
-                <tr><th>Username</th><th>Login Time</th></tr>
+                <tr>
+                  <th>Username</th>
+                  <th>Login Time</th>
+                </tr>
               </thead>
               <tbody>
                 @for (log of data().recentLogins; track log._id) {
                   <tr>
                     <td>{{ log.username }}</td>
-                    <td>{{ log.loginAt | date:'medium' }}</td>
+                    <td>{{ log.loginAt | date: 'medium' }}</td>
                   </tr>
                 }
               </tbody>
@@ -101,7 +105,6 @@
           </div>
         </div>
       </section>
-
     }
   </main>
 </div>
