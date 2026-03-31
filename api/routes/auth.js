@@ -1,6 +1,7 @@
-const express = require('express');
-const bcrypt  = require('bcryptjs');
-const User    = require('../models/User');
+const express  = require('express');
+const bcrypt   = require('bcryptjs');
+const User     = require('../models/User');
+const LoginLog = require('../models/LoginLog');
 
 const router = express.Router();
 
@@ -19,6 +20,8 @@ router.post('/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match)
       return res.status(401).json({ message: 'Invalid username or password.' });
+
+    await LoginLog.create({ username });
 
     res.json({ message: 'Login successful.', role: user.role });
   } catch (err) {

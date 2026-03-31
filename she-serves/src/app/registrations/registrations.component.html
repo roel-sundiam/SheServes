@@ -1,48 +1,106 @@
-<div class="page">
-  <header class="header">
-    <a routerLink="/dashboard" class="back-btn">&#8592;</a>
-    <h1 class="title">Registrations</h1>
-    <button class="logout-btn" (click)="logout()">Logout</button>
+<div class="registrations-page">
+  <div class="bg-glow bg-glow-a"></div>
+  <div class="bg-glow bg-glow-b"></div>
+
+  <header class="topbar">
+    <a routerLink="/admin" class="back-btn" aria-label="Back to dashboard">
+      <span aria-hidden="true">&#8592;</span>
+    </a>
+
+    <div class="title-wrap">
+      <p class="eyebrow">Admin Panel</p>
+      <h1>Registrations</h1>
+    </div>
+
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="refresh()" [disabled]="refreshing()" title="Refresh data">
+        <span class="refresh-icon" [class.spinning]="refreshing()">&#8635;</span>
+        {{ refreshing() ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
   </header>
 
-  <div class="content">
-    <div class="summary-bar">
-      <span class="summary-item">Total: <strong>{{ registrations.length }}</strong></span>
-      <span class="summary-item confirmed">Confirmed: <strong>{{ confirmed }}</strong></span>
-      <span class="summary-item pending">Pending: <strong>{{ pending }}</strong></span>
-    </div>
+  <main class="content-shell">
+    @if (loading()) {
+      <section class="state-card">
+        <h2>Loading registrations...</h2>
+        <p>Pulling the latest entries from the database.</p>
+      </section>
+    } @else if (error()) {
+      <section class="state-card error">
+        <h2>Could not load registrations</h2>
+        <p>{{ error() }}</p>
+      </section>
+    } @else {
+      <section class="stats-grid">
+        <article class="stat-card">
+          <p class="label">Total Registrations</p>
+          <p class="value">{{ rows().length }}</p>
+        </article>
+      </section>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Category</th>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (r of registrations; track r.id) {
-            <tr>
-              <td>{{ r.id }}</td>
-              <td>{{ r.name }}</td>
-              <td>{{ r.email }}</td>
-              <td>{{ r.phone }}</td>
-              <td>{{ r.category }}</td>
-              <td>{{ r.date }}</td>
-              <td>
-                <span class="badge" [class.confirmed]="r.status === 'Confirmed'" [class.pending]="r.status === 'Pending'">
-                  {{ r.status }}
-                </span>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </div>
+      <section class="desktop-table" aria-label="Registrations table">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                @for (col of columns(); track col) {
+                  <th>{{ col }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of pagedRows(); track $index) {
+                <tr>
+                  @for (col of columns(); track col) {
+                    <td>{{ row[col] || 'N/A' }}</td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="pagination" aria-label="Pagination controls">
+        <p class="pagination-summary">
+          Showing {{ startItem() }}-{{ endItem() }} of {{ rows().length }}
+        </p>
+
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="page-btn"
+            (click)="previousPage()"
+            [disabled]="currentPage() === 1"
+          >
+            Previous
+          </button>
+
+          <div class="page-number-list" aria-label="Page numbers">
+            @for (page of pageNumbers(); track page) {
+              <button
+                type="button"
+                class="page-number"
+                [class.active]="page === currentPage()"
+                (click)="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+            }
+          </div>
+
+          <button
+            type="button"
+            class="page-btn"
+            (click)="nextPage()"
+            [disabled]="currentPage() === totalPages()"
+          >
+            Next
+          </button>
+        </div>
+      </section>
+    }
+  </main>
 </div>
