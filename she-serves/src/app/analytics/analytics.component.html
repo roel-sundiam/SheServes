@@ -12,7 +12,12 @@
       <h1>Site Analytics</h1>
     </div>
 
-    <button class="logout-btn" (click)="logout()">Logout</button>
+    <div class="topbar-actions">
+      <button class="refresh-btn" (click)="refresh()" [class.spinning]="refreshing()" aria-label="Refresh">
+        <span class="refresh-icon">&#8635;</span>
+      </button>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
   </header>
 
   <main class="content-shell">
@@ -71,7 +76,7 @@
               </thead>
               <tbody>
                 @for (p of data().visitsByPage; track p._id) {
-                  <tr>
+                  <tr [class.row-updated]="newPageIds().has(p._id)">
                     <td>{{ p._id }}</td>
                     <td>{{ p.count }}</td>
                   </tr>
@@ -95,7 +100,7 @@
               </thead>
               <tbody>
                 @for (log of data().recentLogins; track log._id) {
-                  <tr>
+                  <tr [class.row-updated]="newLoginIds().has(log._id)">
                     <td>{{ log.username }}</td>
                     <td>{{ log.loginAt | date: 'medium' }}</td>
                   </tr>
