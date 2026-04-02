@@ -23,8 +23,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   newPageIds   = signal<Set<string>>(new Set());
   newLoginIds  = signal<Set<string>>(new Set());
+  toast        = signal('');
 
   private refreshInterval: any;
+  private toastTimer: any;
 
   ngOnInit() {
     this.loadData();
@@ -33,6 +35,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     clearInterval(this.refreshInterval);
+    clearTimeout(this.toastTimer);
   }
 
   refresh() {
@@ -67,6 +70,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
               .map((l: any) => l._id)
           );
           this.newLoginIds.set(newLogins);
+
+          if (changedPages.size || newLogins.size) {
+            this.playChime();
+            const parts = [];
+            if (changedPages.size) parts.push(`${changedPages.size} page${changedPages.size > 1 ? 's' : ''} updated`);
+            if (newLogins.size)   parts.push(`${newLogins.size} new login${newLogins.size > 1 ? 's' : ''}`);
+            this.showToast(parts.join(' · '));
+          }
         }
         this.data.set(res);
         this.loading.set(false);
@@ -78,6 +89,33 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.refreshing.set(false);
       }
     });
+  }
+
+  private playChime() {
+    try {
+      const ctx = new AudioContext();
+      const notes = [783.99, 987.77, 1174.66];
+      notes.forEach((freq, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = ctx.currentTime + i * 0.12;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.18, start + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+        osc.start(start);
+        osc.stop(start + 0.35);
+      });
+    } catch {}
+  }
+
+  private showToast(message: string) {
+    clearTimeout(this.toastTimer);
+    this.toast.set(message);
+    this.toastTimer = setTimeout(() => this.toast.set(''), 4000);
   }
 
   logout() {

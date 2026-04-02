@@ -20,6 +20,10 @@
     </div>
   </header>
 
+  @if (toast()) {
+    <div class="toast">&#128276; {{ toast() }}</div>
+  }
+
   <main class="content-shell">
     @if (loading()) {
       <section class="state-card">
