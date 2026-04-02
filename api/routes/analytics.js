@@ -34,7 +34,8 @@ router.get('/analytics', async (req, res) => {
       .select('username loginAt');
 
     const visitsByPage = await Visit.aggregate([
-      { $group: { _id: '$page', count: { $sum: 1 } } },
+      { $addFields: { normalizedPage: { $arrayElemAt: [{ $split: ['$page', '?'] }, 0] } } },
+      { $group: { _id: '$normalizedPage', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 10 },
     ]);

@@ -17,7 +17,7 @@ export class App implements OnInit {
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe((e: any) => {
-      this.analytics.trackVisit(e.urlAfterRedirects);
+      this.analytics.trackVisit(e.urlAfterRedirects.split('?')[0]);
     });
   }
 }
