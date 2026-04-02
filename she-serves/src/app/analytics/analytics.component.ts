@@ -47,6 +47,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       next: (res) => {
         const prev = this.data();
         if (prev) {
+          this.newPageIds.set(new Set());
+          this.newLoginIds.set(new Set());
+
           const prevPageCounts = new Map<string, number>(
             prev.visitsByPage.map((p: any) => [p._id, p.count])
           );
@@ -64,13 +67,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
               .map((l: any) => l._id)
           );
           this.newLoginIds.set(newLogins);
-
-          if (changedPages.size || newLogins.size) {
-            setTimeout(() => {
-              this.newPageIds.set(new Set());
-              this.newLoginIds.set(new Set());
-            }, 4000);
-          }
         }
         this.data.set(res);
         this.loading.set(false);

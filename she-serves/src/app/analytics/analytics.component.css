@@ -135,13 +135,8 @@
 }
 
 .row-updated {
-  animation: highlight-row 4s ease forwards;
-}
-
-@keyframes highlight-row {
-  0%   { background: #d1fae5; }
-  70%  { background: #d1fae5; }
-  100% { background: transparent; }
+  background: #d1fae5 !important;
+  transition: background 0.4s ease;
 }
 
 .logout-btn {
