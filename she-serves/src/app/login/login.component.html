@@ -37,7 +37,13 @@
         <p class="error-msg">{{ error() }}</p>
       }
 
-      <button type="submit" class="login-btn">Login</button>
+      <button type="submit" class="login-btn" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner"></span> Logging in...
+        } @else {
+          Login
+        }
+      </button>
     </form>
 
     <a routerLink="/" class="back-link">← Back to Home</a>

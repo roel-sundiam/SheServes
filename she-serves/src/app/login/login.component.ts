@@ -16,6 +16,7 @@ export class LoginComponent {
   password = '';
   error = signal('');
   showPassword = signal(false);
+  loading = signal(false);
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -24,11 +25,14 @@ export class LoginComponent {
       this.error.set('Please enter username and password.');
       return;
     }
+    this.loading.set(true);
+    this.error.set('');
     const { ok, message } = await this.auth.login(this.username, this.password);
     if (ok) {
       this.router.navigate(['/admin']);
     } else {
       this.error.set(message);
+      this.loading.set(false);
     }
   }
 
