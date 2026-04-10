@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://sheserves.onrender.com/api'
+  apiUrl: '/.netlify/functions/api'
 };

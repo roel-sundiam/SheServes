@@ -1,0 +1,12 @@
+{
+  "name": "she-serves-functions",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.3.3",
+    "serverless-http": "^3.2.0"
+  }
+}
