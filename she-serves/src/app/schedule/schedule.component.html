@@ -1,0 +1,64 @@
+<div class="schedule-shell">
+  <header class="topbar">
+    <a routerLink="/dashboard" class="back-btn" aria-label="Back to Dashboard">&#8592;</a>
+    <p class="brand">SheServes</p>
+  </header>
+
+  <main class="schedule-main">
+    <section class="hero-panel">
+      <p class="hero-kicker">Player Space</p>
+      <h1><em>Schedule</em> Board</h1>
+      <p class="hero-copy">
+        Stay updated on upcoming matches, open play sessions, and private events.
+      </p>
+
+      <div class="hero-meta">
+        <span class="meta-pill">
+          {{ loading() ? 'Updating schedule...' : (schedules().length + ' Events') }}
+        </span>
+        @if (!loading() && schedules().length > 0) {
+          <span class="meta-pill">Sorted by Soonest</span>
+        }
+      </div>
+    </section>
+
+    <section class="schedule-feed">
+      @if (loading()) {
+        <article class="status-card">
+          <p class="status-title">Loading schedule...</p>
+          <p class="status-copy">Please wait while we fetch the latest entries.</p>
+        </article>
+      } @else if (schedules().length === 0) {
+        <article class="status-card">
+          <p class="status-title">No schedule available yet</p>
+          <p class="status-copy">Check back soon for newly posted events.</p>
+        </article>
+      } @else {
+        <div class="list">
+          @for (item of schedules(); track item._id; let i = $index) {
+            <article
+              class="schedule-card"
+              [attr.data-category]="item.category"
+              [style.animationDelay]="(i * 0.06) + 's'"
+            >
+              <div class="card-topline">
+                <span class="category">{{ formatCategory(item.category) }}</span>
+                <span class="date">{{ formatDate(item.eventDate) }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Time</span>
+                <p class="time">{{ formatTime(item.eventTime) }}</p>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Venue</span>
+                <p class="place">{{ item.place }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </main>
+</div>

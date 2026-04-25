@@ -1,0 +1,73 @@
+<div
+  class="announcements-shell"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)">
+
+  <header class="topbar">
+    <a routerLink="/dashboard" class="back-btn" aria-label="Back to Dashboard">&#8592;</a>
+    <p class="brand">SheServes</p>
+  </header>
+
+  <main class="announcements-main">
+    <section class="hero-panel">
+      <p class="hero-kicker">Player Space</p>
+      <h1><em>Announcements</em> Board</h1>
+      <p class="hero-copy">
+        Read official updates, invitations, and event notes from the SheServes team.
+      </p>
+
+      <div class="hero-meta">
+        <span class="meta-pill">
+          {{ loading() ? 'Updating announcements...' : (announcements().length + ' Posts') }}
+        </span>
+        @if (!loading() && announcements().length > 1) {
+          <span class="meta-pill">Swipe or use arrows</span>
+        }
+      </div>
+    </section>
+
+    <section class="announcements-feed">
+      @if (loading()) {
+        <article class="status-card">
+          <p class="status-title">Loading announcements...</p>
+          <p class="status-copy">Please wait while we fetch the latest posts.</p>
+        </article>
+      } @else if (announcements().length === 0) {
+        <article class="status-card">
+          <p class="status-title">No announcements at the moment</p>
+          <p class="status-copy">Check back soon for new updates and invitations.</p>
+        </article>
+      } @else {
+        <div class="carousel-wrap">
+          @if (announcements().length > 1) {
+            <button class="arrow arrow-left" (click)="prev()" aria-label="Previous announcement">&#8249;</button>
+            <button class="arrow arrow-right" (click)="next()" aria-label="Next announcement">&#8250;</button>
+          }
+
+          <article class="card" [class.invitation]="current().type === 'invitation'">
+            <span class="badge">
+              {{ current().type === 'invitation' ? '✉️ Invitation' : '📣 Announcement' }}
+            </span>
+
+            <h2 class="ann-title">{{ current().title }}</h2>
+            <p class="ann-msg">{{ current().message }}</p>
+
+            @if (current().eventDate || current().place) {
+              <div class="event-details">
+                <p class="event-sentence">{{ buildEventSentence(current()) }}</p>
+              </div>
+            }
+          </article>
+        </div>
+
+        @if (announcements().length > 1) {
+          <div class="dots">
+            @for (item of announcements(); track item._id; let i = $index) {
+              <span class="dot" [class.active]="i === annIndex()" (click)="goTo(i)"></span>
+            }
+          </div>
+        }
+      }
+    </section>
+  </main>
+</div>

@@ -1,0 +1,122 @@
+<div class="page">
+  <header class="header">
+    <a routerLink="/admin" class="back-btn">&#8592;</a>
+    <h1 class="title">Announcements</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <div class="content">
+
+    <!-- Form -->
+    <section class="form-card">
+      <h2 class="section-title">Post New</h2>
+
+      @if (error()) {
+        <p class="alert alert-error">{{ error() }}</p>
+      }
+      @if (success()) {
+        <p class="alert alert-success">{{ success() }}</p>
+      }
+
+      <div class="field">
+        <label class="label">Type</label>
+        <div class="type-toggle">
+          <button
+            class="type-btn"
+            [class.active]="form.type === 'announcement'"
+            (click)="form.type = 'announcement'">
+            📣 Announcement
+          </button>
+          <button
+            class="type-btn"
+            [class.active]="form.type === 'invitation'"
+            (click)="form.type = 'invitation'">
+            ✉️ Invitation
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="ann-title">Title</label>
+        <input
+          id="ann-title"
+          class="input"
+          type="text"
+          placeholder="e.g. Registration is now open!"
+          [(ngModel)]="form.title"
+          maxlength="100" />
+      </div>
+
+      <div class="field">
+        <label class="label" for="ann-msg">Message</label>
+        <textarea
+          id="ann-msg"
+          class="textarea"
+          rows="4"
+          placeholder="Write your message here..."
+          [(ngModel)]="form.message"
+          maxlength="500">
+        </textarea>
+      </div>
+
+      <div class="field">
+        <label class="label" for="ann-date">Date &amp; Time <span class="optional">(optional)</span></label>
+        <input
+          id="ann-date"
+          class="input"
+          type="datetime-local"
+          [(ngModel)]="form.eventDate" />
+      </div>
+
+      <div class="field">
+        <label class="label" for="ann-place">Place <span class="optional">(optional)</span></label>
+        <input
+          id="ann-place"
+          class="input"
+          type="text"
+          placeholder="e.g. Rizal Memorial Coliseum"
+          [(ngModel)]="form.place"
+          maxlength="150" />
+      </div>
+
+      <button class="submit-btn" (click)="submit()" [disabled]="submitting()">
+        {{ submitting() ? 'Posting…' : 'Post' }}
+      </button>
+    </section>
+
+    <!-- List -->
+    <section class="list-section">
+      <h2 class="section-title">Posted ({{ announcements().length }})</h2>
+
+      @if (loading()) {
+        <p class="status-text">Loading…</p>
+      } @else if (announcements().length === 0) {
+        <p class="status-text">No announcements yet.</p>
+      } @else {
+        <div class="list">
+          @for (item of announcements(); track item._id) {
+            <div class="item" [class.invitation]="item.type === 'invitation'">
+              <div class="item-header">
+                <span class="item-badge">{{ item.type === 'invitation' ? '✉️ Invitation' : '📣 Announcement' }}</span>
+                <span class="item-date">{{ formatDate(item.createdAt) }}</span>
+              </div>
+              <h3 class="item-title">{{ item.title }}</h3>
+              <p class="item-msg">{{ item.message }}</p>
+              @if (item.eventDate) {
+                <p class="item-event-date">🗓 {{ formatDateTime(item.eventDate) }}</p>
+              }
+              @if (item.place) {
+                <p class="item-place">📍 {{ item.place }}</p>
+              }
+              <div class="item-footer">
+                <span class="item-by">by {{ item.createdBy }}</span>
+                <button class="delete-btn" (click)="remove(item._id)">Delete</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+  </div>
+</div>

@@ -1,0 +1,91 @@
+<div class="page">
+  <header class="header">
+    <a routerLink="/admin" class="back-btn">&#8592;</a>
+    <h1 class="title">Schedule Config</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <div class="content">
+    <section class="form-card">
+      <h2 class="section-title">{{ editingId() ? 'Edit Schedule' : 'Add Schedule' }}</h2>
+
+      @if (error()) {
+        <p class="alert alert-error">{{ error() }}</p>
+      }
+      @if (success()) {
+        <p class="alert alert-success">{{ success() }}</p>
+      }
+
+      <div class="field">
+        <label class="label" for="sched-category">Category</label>
+        <select id="sched-category" class="input" [(ngModel)]="form.category">
+          @for (item of categories; track item.value) {
+            <option [value]="item.value">{{ item.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label class="label" for="sched-date">Date</label>
+          <input id="sched-date" class="input" type="date" [(ngModel)]="form.eventDate" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="sched-time">Time</label>
+          <input id="sched-time" class="input" type="time" [(ngModel)]="form.eventTime" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="sched-place">Place</label>
+        <input
+          id="sched-place"
+          class="input"
+          type="text"
+          placeholder="e.g. Rizal Memorial Coliseum"
+          [(ngModel)]="form.place"
+          maxlength="150" />
+      </div>
+
+      <div class="form-actions">
+        <button class="submit-btn" (click)="submit()" [disabled]="submitting()">
+          {{ submitting() ? 'Saving...' : (editingId() ? 'Update Schedule' : 'Save Schedule') }}
+        </button>
+        @if (editingId()) {
+          <button class="cancel-btn" type="button" (click)="cancelEdit()">Cancel</button>
+        }
+      </div>
+    </section>
+
+    <section class="list-section">
+      <h2 class="section-title">Configured Schedules ({{ schedules().length }})</h2>
+
+      @if (loading()) {
+        <p class="status-text">Loading...</p>
+      } @else if (schedules().length === 0) {
+        <p class="status-text">No schedule entries yet.</p>
+      } @else {
+        <div class="list">
+          @for (item of schedules(); track item._id) {
+            <div class="item">
+              <div class="item-header">
+                <span class="item-badge">{{ formatCategory(item.category) }}</span>
+                <span class="item-date">{{ formatDate(item.eventDate) }}</span>
+              </div>
+              <p class="item-time">🕒 {{ formatTime(item.eventTime) }}</p>
+              <p class="item-place">📍 {{ item.place }}</p>
+              <div class="item-footer">
+                <span class="item-by">by {{ item.createdBy }}</span>
+                <div class="item-actions">
+                  <button class="edit-btn" (click)="startEdit(item)">Edit</button>
+                  <button class="delete-btn" (click)="remove(item._id)">Delete</button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </div>
+</div>

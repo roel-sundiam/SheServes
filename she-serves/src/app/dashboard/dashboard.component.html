@@ -1,16 +1,136 @@
-<div class="dashboard">
-  <header class="dashboard-header">
-    <a routerLink="/" class="back-btn">&#8592;</a>
-    <h1 class="dashboard-title">SheServes</h1>
-    <button class="logout-btn" (click)="logout()">Logout</button>
+<div class="dashboard-shell">
+  @if (showAnnouncementModal() && latestAnnouncement(); as announcement) {
+    <div class="announcement-modal-backdrop" (click)="closeAnnouncementModal()">
+      <section class="announcement-modal" [class.invitation]="announcement.type === 'invitation'" (click)="$event.stopPropagation()">
+        <div class="modal-topline">
+          <span class="modal-badge">
+            {{ announcement.type === 'invitation' ? '✉️ Invitation' : '📣 Announcement' }}
+          </span>
+          <button class="modal-close" type="button" aria-label="Close announcement" (click)="closeAnnouncementModal()">×</button>
+        </div>
+
+        <h2 class="modal-title">{{ announcement.title }}</h2>
+        <p class="modal-message">{{ announcement.message }}</p>
+
+        @if (announcement.eventDate || announcement.place) {
+          <div class="modal-details">
+            <p class="modal-details-text">{{ buildEventSentence(announcement) }}</p>
+          </div>
+        }
+
+        <div class="modal-footer">
+          <span class="modal-by">Posted by {{ announcement.createdBy }}</span>
+          <button class="modal-action" type="button" (click)="closeAnnouncementModal()">Got it</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (showScheduleModal() && upcomingSchedule(); as schedule) {
+    <div class="announcement-modal-backdrop" (click)="closeScheduleModal()">
+      <section class="announcement-modal schedule-modal" (click)="$event.stopPropagation()">
+        <div class="modal-topline">
+          <span class="modal-badge schedule-badge">📅 Upcoming Schedule</span>
+          <button class="modal-close" type="button" aria-label="Close upcoming schedule" (click)="closeScheduleModal()">×</button>
+        </div>
+
+        <h2 class="modal-title">{{ scheduleCategoryLabel(schedule.category) }}</h2>
+
+        <div class="modal-details">
+          <p class="modal-details-text">{{ buildScheduleSentence(schedule) }}</p>
+        </div>
+
+        <div class="modal-footer">
+          <span class="modal-by">Tap the Schedule module for full details</span>
+          <button class="modal-action" type="button" (click)="closeScheduleModal()">Got it</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  <header class="topbar">
+    <a routerLink="/" class="back-btn" aria-label="Back to Home">&#8592;</a>
+    <p class="brand">SheServes</p>
+    <a routerLink="/login" class="admin-btn" aria-label="Admin Login">&#128274;</a>
   </header>
 
-  <div class="cards-grid">
-    @for (card of cards; track card.label) {
-      <a [href]="card.route" class="card">
-        <span class="card-icon">{{ card.icon }}</span>
-        <span class="card-label">{{ card.label }}</span>
-      </a>
-    }
-  </div>
+  <main class="dashboard-main">
+    <section class="hero-panel">
+      <p class="hero-kicker">Player Space</p>
+      <h1><em>SheServes Hub</em></h1>
+      <p class="hero-copy">
+        Stay synced with tournaments, registrations, and announcements from one place.
+      </p>
+
+      <div class="hero-meta">
+        <span class="meta-pill">{{ todayLabel }}</span>
+        <span class="meta-pill">{{ cards.length }} Modules</span>
+      </div>
+
+      <div class="hero-actions">
+        <a
+          class="facebook-link"
+          [href]="facebookProfileUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Visit Official Facebook Page"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+          </svg>
+        </a>
+        <a
+          class="instagram-link"
+          href="https://www.instagram.com/sstc_pamp/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Follow on Instagram"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <a
+          class="reclub-link"
+          href="https://reclub.co/clubs/@sheservestennisclub"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="View Club on Reclub"
+        >
+          <img src="/reclub-transparent.png" alt="Reclub" class="reclub-logo" />
+        </a>
+      </div>
+    </section>
+
+    <section class="module-grid">
+      @for (card of cards; track card.label; let i = $index) {
+        @if (card.route === '#') {
+          <article
+            class="module-card is-disabled"
+            [style.--card-accent]="card.accent"
+            [style.animationDelay]="(i * 0.06) + 's'"
+          >
+            <span class="card-icon">{{ card.icon }}</span>
+            <p class="card-title">{{ card.label }}</p>
+            <p class="card-copy">{{ card.description }}</p>
+            <span class="card-status">Coming Soon</span>
+          </article>
+        } @else {
+          <a
+            [routerLink]="card.route"
+            class="module-card"
+            [style.--card-accent]="card.accent"
+            [style.animationDelay]="(i * 0.06) + 's'"
+          >
+            <span class="card-icon">{{ card.icon }}</span>
+            <p class="card-title">{{ card.label }}</p>
+            <p class="card-copy">{{ card.description }}</p>
+            <span class="card-status live">Open</span>
+          </a>
+        }
+      }
+    </section>
+  </main>
 </div>

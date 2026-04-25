@@ -1,1 +1,7 @@
+@if (updateAvailable()) {
+  <div class="update-banner">
+    <span>🔄 A new version is available</span>
+    <button class="update-btn" (click)="applyUpdate()">Refresh</button>
+  </div>
+}
 <router-outlet />
