@@ -1,5 +1,26 @@
 <div class="carousel" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
-  <a routerLink="/dashboard" class="dashboard-btn">Dashboard</a>
+  @if (showScheduleModal() && upcomingSchedule(); as schedule) {
+    <div class="schedule-modal-backdrop" (click)="closeScheduleModal()">
+      <section class="schedule-modal" (click)="$event.stopPropagation()">
+        <div class="modal-topline">
+          <span class="modal-badge">📅 Upcoming Schedule</span>
+          <button class="modal-close" type="button" aria-label="Close upcoming schedule" (click)="closeScheduleModal()">×</button>
+        </div>
+
+        <h2 class="modal-title">{{ scheduleCategoryLabel(schedule.category) }}</h2>
+
+        <div class="modal-details">
+          <p class="modal-details-text">{{ buildScheduleSentence(schedule) }}</p>
+        </div>
+
+        <div class="modal-footer">
+          <button class="modal-action" type="button" routerLink="/schedule" (click)="closeScheduleModal()">View Schedule</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  <a routerLink="/dashboard" class="dashboard-btn">SheServes Hub</a>
   <a href="https://docs.google.com/forms/d/e/1FAIpQLSdlH_6Uq1BvmnIiWNOjeqMyZRlokT3MHgSTMkfdIu-vzkkPvA/viewform?pli=1" target="_blank" rel="noopener noreferrer" class="register-btn">Register</a>
   <img [src]="images[currentIndex()].src" [alt]="images[currentIndex()].alt" class="carousel-image" />
 

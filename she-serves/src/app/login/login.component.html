@@ -1,51 +1,68 @@
-<div class="login-page">
-  <div class="login-card">
-    <h1 class="login-title">SheServes</h1>
-    <p class="login-subtitle">Admin Portal</p>
+<div class="login-shell">
+  <header class="topbar">
+    <a routerLink="/" class="back-btn" aria-label="Back to Home">&#8592; Home</a>
+    <p class="brand">SheServes</p>
+  </header>
 
-    <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
-      <div class="field">
-        <label for="username">Username</label>
-        <input
-          id="username"
-          type="text"
-          [(ngModel)]="username"
-          name="username"
-          placeholder="Enter username"
-          autocomplete="username"
-        />
+  <main class="login-main">
+    <section class="hero-panel">
+      <p class="hero-kicker">Admin Portal</p>
+      <h1 class="hero-title">Welcome<br><em>Back</em></h1>
+      <p class="hero-copy">
+        Manage registrations, announcements, schedules, and analytics for the SheServes community.
+      </p>
+    </section>
+
+    <section class="login-card">
+      <div class="card-brand">
+        <h2 class="card-brand-name">SheServes</h2>
+        <p class="card-brand-sub">Admin Login</p>
       </div>
 
-      <div class="field">
-        <label for="password">Password</label>
-        <div class="password-wrap">
+      <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
+        <div class="field">
+          <label for="username">Username</label>
           <input
-            id="password"
-            [type]="showPassword() ? 'text' : 'password'"
-            [(ngModel)]="password"
-            name="password"
-            placeholder="Enter password"
-            autocomplete="current-password"
+            id="username"
+            type="text"
+            [(ngModel)]="username"
+            name="username"
+            placeholder="Enter username"
+            autocomplete="username"
           />
-          <button type="button" class="toggle-pw" (click)="togglePassword()">
-            {{ showPassword() ? '🙈' : '👁️' }}
-          </button>
         </div>
-      </div>
 
-      @if (error()) {
-        <p class="error-msg">{{ error() }}</p>
-      }
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Enter password"
+              autocomplete="current-password"
+            />
+            <button type="button" class="toggle-pw" aria-label="Toggle password visibility" (click)="togglePassword()">
+              {{ showPassword() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+        </div>
 
-      <button type="submit" class="login-btn" [disabled]="loading()">
-        @if (loading()) {
-          <span class="spinner"></span> Logging in...
-        } @else {
-          Login
+        @if (error()) {
+          <p class="error-msg">{{ error() }}</p>
         }
-      </button>
-    </form>
 
-    <a routerLink="/" class="back-link">← Back to Home</a>
-  </div>
+        <button type="submit" class="login-btn" [disabled]="loading()">
+          @if (loading()) {
+            <span class="spinner"></span> Logging in...
+          } @else {
+            Sign In
+          }
+        </button>
+      </form>
+
+      <a routerLink="/" class="back-link">&#8592; Back to Home</a>
+    </section>
+  </main>
 </div>

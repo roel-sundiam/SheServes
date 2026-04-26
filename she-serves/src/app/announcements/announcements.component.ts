@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AnnouncementsService, Announcement } from '../services/announcements.service';
 import { PushNotificationService } from '../services/push-notification.service';
+import { CoinsService } from '../services/coins.service';
 
 @Component({
   selector: 'app-announcements',
@@ -14,6 +15,7 @@ import { PushNotificationService } from '../services/push-notification.service';
 export class AnnouncementsComponent implements OnInit {
   private svc   = inject(AnnouncementsService);
   private push  = inject(PushNotificationService);
+  coins = inject(CoinsService);
 
   annIndex      = signal(0);
   announcements = signal<Announcement[]>([]);

@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ScheduleService, ScheduleCategory, ScheduleEntry } from '../services/schedule.service';
 import { PushNotificationService } from '../services/push-notification.service';
+import { CoinsService } from '../services/coins.service';
 
 @Component({
   selector: 'app-schedule',
@@ -14,6 +15,7 @@ import { PushNotificationService } from '../services/push-notification.service';
 export class ScheduleComponent implements OnInit {
   private svc  = inject(ScheduleService);
   private push = inject(PushNotificationService);
+  coins = inject(CoinsService);
 
   schedules = signal<ScheduleEntry[]>([]);
   loading = signal(true);

@@ -5,14 +5,25 @@ import { LoginComponent } from './login/login.component';
 import { AdminHomeComponent } from './admin-home/admin-home.component';
 import { RegistrationsComponent } from './registrations/registrations.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
+import { AnnouncementsAdminComponent } from './announcements-admin/announcements-admin.component';
+import { AnnouncementsComponent } from './announcements/announcements.component';
+import { ScheduleAdminComponent } from './schedule-admin/schedule-admin.component';
+import { ScheduleComponent } from './schedule/schedule.component';
+import { FinanceAdminComponent } from './finance-admin/finance-admin.component';
 import { authGuard } from './services/auth.guard';
 import { superAdminGuard } from './services/superadmin.guard';
+import { coinsGuard } from './coins.guard';
 
 export const routes: Routes = [
-  { path: '',              component: CarouselComponent },
-  { path: 'login',         component: LoginComponent },
-  { path: 'dashboard',     component: DashboardComponent },
-  { path: 'admin',         component: AdminHomeComponent,     canActivate: [authGuard] },
-  { path: 'registrations', component: RegistrationsComponent, canActivate: [authGuard] },
-  { path: 'analytics',     component: AnalyticsComponent,     canActivate: [authGuard, superAdminGuard] },
+  { path: '',                    component: CarouselComponent },
+  { path: 'login',               component: LoginComponent },
+  { path: 'dashboard',           component: DashboardComponent,           canActivate: [coinsGuard] },
+  { path: 'admin',               component: AdminHomeComponent,         canActivate: [authGuard] },
+  { path: 'registrations',       component: RegistrationsComponent,     canActivate: [authGuard] },
+  { path: 'analytics',           component: AnalyticsComponent,         canActivate: [authGuard, superAdminGuard] },
+  { path: 'announcements-admin', component: AnnouncementsAdminComponent, canActivate: [authGuard] },
+  { path: 'announcements',       component: AnnouncementsComponent,       canActivate: [coinsGuard] },
+  { path: 'schedule-admin',      component: ScheduleAdminComponent,      canActivate: [authGuard] },
+  { path: 'schedule',            component: ScheduleComponent,            canActivate: [coinsGuard] },
+  { path: 'finance-admin',       component: FinanceAdminComponent,         canActivate: [authGuard] },
 ];

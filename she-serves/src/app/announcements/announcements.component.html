@@ -2,6 +2,15 @@
   class="announcements-shell"
   (touchstart)="onTouchStart($event)"
   (touchend)="onTouchEnd($event)">
+  @if (coins.locked()) {
+    <div class="coins-overlay">
+      <div class="coins-overlay-card">
+        <p class="coins-overlay-icon">🔒</p>
+        <p class="coins-overlay-title">Service Unavailable</p>
+        <p class="coins-overlay-msg">This service is temporarily unavailable. Please contact the administrator.</p>
+      </div>
+    </div>
+  }
 
   <header class="topbar">
     <a routerLink="/dashboard" class="back-btn" aria-label="Back to Dashboard">&#8592;</a>

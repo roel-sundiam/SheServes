@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { AnnouncementsService, Announcement } from '../services/announcements.service';
+import { CoinsService } from '../services/coins.service';
 
 @Component({
   selector: 'app-announcements-admin',
@@ -16,6 +17,7 @@ export class AnnouncementsAdminComponent implements OnInit {
   private auth   = inject(AuthService);
   private router = inject(Router);
   private svc    = inject(AnnouncementsService);
+  private coins  = inject(CoinsService);
 
   announcements = signal<Announcement[]>([]);
   loading   = signal(true);
@@ -51,6 +53,7 @@ export class AnnouncementsAdminComponent implements OnInit {
         this.form = { title: '', message: '', type: 'announcement', eventDate: '', place: '' };
         this.success.set('Posted successfully!');
         this.submitting.set(false);
+        this.coins.deductAdmin('create announcement');
       },
       error: () => {
         this.error.set('Failed to post. Please try again.');

@@ -1,4 +1,13 @@
 <div class="dashboard-shell">
+  @if (coins.locked()) {
+    <div class="coins-overlay">
+      <div class="coins-overlay-card">
+        <p class="coins-overlay-icon">🔒</p>
+        <p class="coins-overlay-title">Service Unavailable</p>
+        <p class="coins-overlay-msg">This service is temporarily unavailable. Please contact the administrator.</p>
+      </div>
+    </div>
+  }
   @if (showAnnouncementModal() && latestAnnouncement(); as announcement) {
     <div class="announcement-modal-backdrop" (click)="closeAnnouncementModal()">
       <section class="announcement-modal" [class.invitation]="announcement.type === 'invitation'" (click)="$event.stopPropagation()">

@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API = environment.apiUrl;
+  private readonly TRACKER = environment.bo2tTrackerUrl;
 
   isLoggedIn  = signal(this.checkSession());
   currentUser = signal(sessionStorage.getItem('ss_user') ?? '');
@@ -23,6 +24,8 @@ export class AuthService {
       this.isLoggedIn.set(true);
       this.currentUser.set(username);
       this.isSuperAdmin.set(username === 'admin');
+      const blob = new Blob([JSON.stringify({ event: 'login', appId: 'sheservestc', userId: username, timestamp: new Date().toISOString() })], { type: 'text/plain' });
+      navigator.sendBeacon(this.TRACKER, blob);
       return { ok: true, message: '' };
     } catch (err: any) {
       const message = err?.error?.message || 'Invalid username or password.';

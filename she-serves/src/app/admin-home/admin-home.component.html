@@ -1,23 +1,211 @@
-<div class="page">
-  <header class="header">
-    <a routerLink="/dashboard" class="back-btn">&#8592;</a>
-    <h1 class="title">Admin Portal</h1>
-    <button class="logout-btn" (click)="logout()">Logout</button>
+<div class="admin-shell">
+  <header class="topbar">
+    <a routerLink="/dashboard" class="back-btn" aria-label="Back to Dashboard">&#8592;</a>
+    <p class="brand">SheServes Admin</p>
+    <button class="logout-btn" type="button" (click)="logout()">Logout</button>
   </header>
 
-  <div class="cards-wrap">
-    <a routerLink="/registrations" class="card">
-      <span class="card-icon">📋</span>
-      <span class="card-label">Registrations</span>
-      <span class="card-desc">View and manage all player registrations</span>
-    </a>
+  <main class="admin-main">
+    <section class="overview-grid">
+      <section class="hero-panel">
+        <p class="hero-kicker">Control Center</p>
+        <h1><em>Admin</em> Portal</h1>
+        <p class="hero-copy">
+          Manage registrations, publish updates, configure schedules, and review insights from one
+          place.
+        </p>
+        <p class="hero-user">Logged in as <strong>{{ currentUser() }}</strong></p>
+      </section>
 
-    @if (isSuperAdmin()) {
-      <a routerLink="/analytics" class="card">
-        <span class="card-icon">📊</span>
-        <span class="card-label">Site Analytics</span>
-        <span class="card-desc">Track visits, traffic and site performance</span>
+      <div class="admin-side-column">
+        <section class="coin-panel" aria-label="App coins summary">
+          <p class="coin-heading">🪙 App Coins</p>
+
+          <div class="coin-metrics">
+            <div class="coin-stat">
+              <p class="coin-value" [class.coin-low]="coins.balance() === 0">
+                {{ coins.balance() }}
+              </p>
+              <p class="coin-caption">Balance</p>
+            </div>
+            <div class="coin-stat">
+              <p class="coin-value coin-secondary">{{ coins.locked() ? 1 : 0 }}</p>
+              <p class="coin-caption">Locked</p>
+            </div>
+          </div>
+
+          @if (isSuperAdmin()) {
+            <div class="topup-form">
+              <input
+                type="number"
+                class="topup-input"
+                placeholder="Coins to add"
+                [(ngModel)]="topUpAmount"
+                name="topUpAmount"
+                min="1"
+              />
+              <button class="topup-btn" type="button" (click)="doTopUp()" [disabled]="toppingUp()">
+                {{ toppingUp() ? 'Adding…' : 'Top Up' }}
+              </button>
+            </div>
+            @if (topUpSuccess()) {
+              <p class="topup-msg topup-ok">{{ topUpSuccess() }}</p>
+            }
+            @if (topUpError()) {
+              <p class="topup-msg topup-err">{{ topUpError() }}</p>
+            }
+          } @else {
+            <button class="request-topup-btn" type="button" (click)="showTopUpModal.set(true)">
+              🪙 Request Top-Up
+            </button>
+          }
+        </section>
+
+        @if (isSuperAdmin()) {
+          <section class="requests-panel" aria-label="Top-up requests">
+            <div class="requests-header">
+              <p class="requests-heading">🪙 Top-Up Requests</p>
+              <span class="requests-count">{{ coinRequests().length }}</span>
+            </div>
+
+            @if (coinRequests().length === 0) {
+              <p class="requests-empty">No requests yet.</p>
+            }
+
+            @for (req of coinRequests(); track req._id) {
+              <article
+                class="request-card"
+                [class.req-approved]="req.status === 'approved'"
+                [class.req-rejected]="req.status === 'rejected'"
+              >
+                <div class="req-main">
+                  <p class="req-amount">{{ req.amount }} coins</p>
+                  <p class="req-date">{{ formatDate(req.createdAt) }}</p>
+                </div>
+
+                <div class="req-actions">
+                  @if (req.status === 'pending') {
+                    <button
+                      class="req-btn approve-btn"
+                      (click)="approve(req._id)"
+                      [disabled]="processingId() === req._id"
+                    >
+                      {{ processingId() === req._id ? '...' : 'Approve' }}
+                    </button>
+                    <button
+                      class="req-btn reject-btn"
+                      (click)="reject(req._id)"
+                      [disabled]="processingId() === req._id"
+                    >
+                      Reject
+                    </button>
+                  } @else {
+                    <span
+                      class="req-status-badge"
+                      [class.badge-approved]="req.status === 'approved'"
+                      [class.badge-rejected]="req.status === 'rejected'"
+                    >
+                      {{ req.status }}
+                    </span>
+                  }
+                </div>
+              </article>
+            }
+          </section>
+        }
+      </div>
+
+      @if (showTopUpModal()) {
+        <div class="modal-backdrop" (click)="showTopUpModal.set(false)">
+          <div class="topup-modal" (click)="$event.stopPropagation()">
+            <button class="modal-close" type="button" (click)="showTopUpModal.set(false)">×</button>
+            <p class="modal-title">Buy App Coins</p>
+            <p class="modal-rate">₱ 1 = 1 coin</p>
+
+            <div class="request-amount-row">
+              <input
+                type="number"
+                class="request-amount-input"
+                placeholder="How many coins?"
+                [(ngModel)]="requestAmount"
+                name="requestAmount"
+                min="1"
+              />
+              @if (requestAmount > 0) {
+                <p class="request-total">
+                  Total: <strong>₱ {{ requestAmount }}</strong>
+                </p>
+              }
+            </div>
+
+            <p class="modal-section-label">InstaPay QR</p>
+            <img class="qr-image" src="/instapay-qr.png" alt="InstaPay QR Code" />
+
+            <p class="modal-section-label">Cash</p>
+            <p class="modal-cash-note">
+              Pay in person to the developer and they will top up your coins.
+            </p>
+
+            <p class="modal-footer-note">
+              Pay first, then submit your request so the developer knows to top up.
+            </p>
+
+            <button
+              class="submit-request-btn"
+              type="button"
+              (click)="submitRequest()"
+              [disabled]="submittingReq() || requestAmount <= 0"
+            >
+              {{ submittingReq() ? 'Submitting…' : 'Submit Request' }}
+            </button>
+            @if (requestSuccess()) {
+              <p class="topup-msg topup-ok">{{ requestSuccess() }}</p>
+            }
+            @if (requestError()) {
+              <p class="topup-msg topup-err">{{ requestError() }}</p>
+            }
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="module-grid">
+      <a routerLink="/registrations" class="module-card" style="--card-accent: #f09a36">
+        <span class="card-icon">📋</span>
+        <p class="card-title">Registrations</p>
+        <p class="card-copy">View and manage all player registrations.</p>
+        <span class="card-status live">Open</span>
       </a>
-    }
-  </div>
+
+      <a routerLink="/announcements-admin" class="module-card" style="--card-accent: #1f7a66">
+        <span class="card-icon">📣</span>
+        <p class="card-title">Announcements</p>
+        <p class="card-copy">Post and manage announcements and invitations.</p>
+        <span class="card-status live">Open</span>
+      </a>
+
+      <a routerLink="/schedule-admin" class="module-card" style="--card-accent: #6e9287">
+        <span class="card-icon">🗓️</span>
+        <p class="card-title">Schedule Config</p>
+        <p class="card-copy">Set category, date, time, and place for upcoming events.</p>
+        <span class="card-status live">Open</span>
+      </a>
+
+      <a routerLink="/finance-admin" class="module-card" style="--card-accent: #2e8b57">
+        <span class="card-icon">💰</span>
+        <p class="card-title">Finance</p>
+        <p class="card-copy">Track cash collections, disbursements, and net income report.</p>
+        <span class="card-status live">Open</span>
+      </a>
+
+      @if (isSuperAdmin()) {
+        <a routerLink="/analytics" class="module-card" style="--card-accent: #8869d3">
+          <span class="card-icon">📊</span>
+          <p class="card-title">Site Analytics</p>
+          <p class="card-copy">Track visits, traffic, and site performance metrics.</p>
+          <span class="card-status live">Open</span>
+        </a>
+      }
+    </section>
+  </main>
 </div>

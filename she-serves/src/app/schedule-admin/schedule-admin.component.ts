@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { ScheduleService, ScheduleCategory, ScheduleEntry } from '../services/schedule.service';
+import { CoinsService } from '../services/coins.service';
 
 @Component({
   selector: 'app-schedule-admin',
@@ -13,9 +14,10 @@ import { ScheduleService, ScheduleCategory, ScheduleEntry } from '../services/sc
   styleUrl: './schedule-admin.component.css',
 })
 export class ScheduleAdminComponent implements OnInit {
-  private auth = inject(AuthService);
+  private auth  = inject(AuthService);
   private router = inject(Router);
-  private svc = inject(ScheduleService);
+  private svc   = inject(ScheduleService);
+  private coins = inject(CoinsService);
 
   schedules  = signal<ScheduleEntry[]>([]);
   loading    = signal(true);
@@ -104,6 +106,7 @@ export class ScheduleAdminComponent implements OnInit {
           this.cancelEdit();
           this.success.set('Schedule updated successfully!');
           this.submitting.set(false);
+          this.coins.deductAdmin('edit schedule');
         },
         error: (err) => {
           this.error.set(err?.error?.message || 'Failed to update schedule. Please try again.');
@@ -119,6 +122,7 @@ export class ScheduleAdminComponent implements OnInit {
           this.form = { category: 'tournament', eventDate: '', eventTime: '', place: '' };
           this.success.set('Schedule saved successfully!');
           this.submitting.set(false);
+          this.coins.deductAdmin('create schedule');
         },
         error: (err) => {
           this.error.set(err?.error?.message || 'Failed to save schedule. Please try again.');

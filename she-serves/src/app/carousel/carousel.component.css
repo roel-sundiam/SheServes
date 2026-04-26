@@ -118,6 +118,105 @@
   background: rgba(40, 80, 80, 1);
 }
 
+.schedule-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(41, 22, 34, 0.56);
+  backdrop-filter: blur(4px);
+}
+
+.schedule-modal {
+  width: min(620px, 100%);
+  max-height: min(84vh, 760px);
+  overflow: auto;
+  border-radius: 24px;
+  padding: 22px 20px 18px;
+  border: 1px solid rgba(47, 79, 113, 0.18);
+  background: linear-gradient(180deg, #eef2f6 0%, #e6ecf3 100%);
+  box-shadow: 0 24px 50px rgba(28, 14, 22, 0.28);
+}
+
+.modal-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2f4f71;
+  background: #d7e4f3;
+}
+
+.modal-close {
+  border: 0;
+  background: transparent;
+  color: #4a6785;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.modal-title {
+  margin: 14px 0 0;
+  font-family: 'Segoe Script', 'Brush Script MT', 'Lucida Handwriting', cursive;
+  font-style: italic;
+  font-size: clamp(1.8rem, 4vw, 2.35rem);
+  line-height: 1.1;
+  color: #355271;
+}
+
+.modal-details {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #dce7f3;
+  border: 1px solid rgba(47, 79, 113, 0.16);
+}
+
+.modal-details-text {
+  margin: 0;
+  color: #3c5877;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.modal-footer {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-action {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  text-decoration: none;
+  background: linear-gradient(125deg, #b86d95, #8d4b72);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(124, 63, 101, 0.24);
+}
+
+.modal-action:hover {
+  filter: brightness(1.05);
+}
+
 /* Tablet and smaller */
 @media (max-width: 768px) {
   .arrow {
@@ -142,6 +241,11 @@
   .dot {
     width: 10px;
     height: 10px;
+  }
+
+  .schedule-modal {
+    border-radius: 20px;
+    padding: 18px 16px 16px;
   }
 }
 

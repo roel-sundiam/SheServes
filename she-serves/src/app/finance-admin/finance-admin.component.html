@@ -1,0 +1,252 @@
+<div class="page">
+  <header class="header">
+    <a routerLink="/admin" class="back-btn">&#8592;</a>
+    <h1 class="title">Finance</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <!-- Tab nav -->
+  <nav class="tab-nav">
+    <button class="tab-btn" [class.active]="activeTab() === 'finance'" (click)="switchTab('finance')">
+      💰 Finance
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'app-service'" (click)="switchTab('app-service')">
+      🛠 App Service
+      @if (outstanding() > 0) {
+        <span class="tab-dot"></span>
+      }
+    </button>
+  </nav>
+
+  <div class="content">
+
+    <!-- ── FINANCE TAB ── -->
+    @if (activeTab() === 'finance') {
+
+      <!-- Form -->
+      <section class="form-card">
+        <h2 class="section-title">Add Entry</h2>
+
+        @if (error()) {
+          <p class="alert alert-error">{{ error() }}</p>
+        }
+        @if (success()) {
+          <p class="alert alert-success">{{ success() }}</p>
+        }
+
+        <div class="field">
+          <label class="label">Entry Type</label>
+          <div class="type-toggle">
+            <button
+              class="type-btn"
+              [class.active-in]="form.entryType === 'cash-in'"
+              (click)="form.entryType = 'cash-in'">
+              💵 Cash Collection
+            </button>
+            <button
+              class="type-btn"
+              [class.active-out]="form.entryType === 'cash-out'"
+              (click)="form.entryType = 'cash-out'">
+              💸 Disbursement
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="fin-amount">Amount (₱)</label>
+          <input
+            id="fin-amount"
+            class="input"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+            [(ngModel)]="form.amount" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="fin-desc">Description</label>
+          <input
+            id="fin-desc"
+            class="input"
+            type="text"
+            placeholder="e.g. Registration fees collected"
+            [(ngModel)]="form.description"
+            maxlength="200" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="fin-date">Date</label>
+          <input
+            id="fin-date"
+            class="input"
+            type="date"
+            [(ngModel)]="form.date" />
+        </div>
+
+        <button class="submit-btn" (click)="submit()" [disabled]="submitting()">
+          {{ submitting() ? 'Saving…' : 'Add Entry' }}
+        </button>
+      </section>
+
+      <!-- Report -->
+      <section class="report-card">
+        <h2 class="section-title">Financial Report</h2>
+
+        <div class="report-row">
+          <span class="report-label">Total Cash Collections</span>
+          <span class="report-value value-in">₱ {{ fmt(totalIn()) }}</span>
+        </div>
+        <div class="report-row">
+          <span class="report-label">Total Disbursements</span>
+          <span class="report-value value-out">₱ {{ fmt(totalOut()) }}</span>
+        </div>
+
+        <div class="report-divider"></div>
+
+        <div class="report-row net-row">
+          <span class="report-label">Net Income</span>
+          <span class="report-value" [class.value-in]="netIncome() >= 0" [class.value-out]="netIncome() < 0">
+            ₱ {{ fmt(netIncome()) }}
+          </span>
+        </div>
+
+        @if (netIncome() > 0) {
+          <div class="report-row fee-row">
+            <span class="report-label">App Service Fee <span class="fee-badge">20%</span></span>
+            <span class="report-value value-out">− ₱ {{ fmt(fee()) }}</span>
+          </div>
+
+          <div class="report-divider"></div>
+
+          <div class="report-row balance-row">
+            <span class="report-label">Balance After Fee</span>
+            <span class="report-value value-balance">₱ {{ fmt(balance()) }}</span>
+          </div>
+        }
+      </section>
+
+      <!-- Entries List -->
+      <section class="list-section">
+        <h2 class="section-title">Entries ({{ entries().length }})</h2>
+
+        @if (loading()) {
+          <p class="status-text">Loading…</p>
+        } @else if (entries().length === 0) {
+          <p class="status-text">No entries yet.</p>
+        } @else {
+          <div class="list">
+            @for (item of entries(); track item._id) {
+              <div class="item" [class.item-out]="item.entryType === 'cash-out'">
+                <div class="item-header">
+                  <span class="item-badge" [class.badge-out]="item.entryType === 'cash-out'">
+                    {{ item.entryType === 'cash-in' ? '💵 Cash In' : '💸 Disbursement' }}
+                  </span>
+                  <span class="item-date">{{ formatDate(item.date) }}</span>
+                </div>
+                <p class="item-desc">{{ item.description }}</p>
+                <div class="item-footer">
+                  <span class="item-amount" [class.amount-out]="item.entryType === 'cash-out'">
+                    {{ item.entryType === 'cash-out' ? '−' : '+' }} ₱ {{ fmt(item.amount) }}
+                  </span>
+                  <div class="item-meta">
+                    <span class="item-by">by {{ item.createdBy }}</span>
+                    <button class="delete-btn" (click)="remove(item._id)">Delete</button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+    }
+
+    <!-- ── APP SERVICE TAB ── -->
+    @if (activeTab() === 'app-service') {
+
+      <!-- Summary card -->
+      <section class="report-card">
+        <h2 class="section-title">App Service Summary</h2>
+
+        <div class="report-row">
+          <span class="report-label">Total Service Fee <span class="fee-badge">20% of net</span></span>
+          <span class="report-value value-out">₱ {{ fmt(fee()) }}</span>
+        </div>
+        <div class="report-row">
+          <span class="report-label">Total Paid</span>
+          <span class="report-value value-in">₱ {{ fmt(totalPaid()) }}</span>
+        </div>
+
+        <div class="report-divider"></div>
+
+        <div class="report-row balance-row">
+          <span class="report-label">Outstanding</span>
+          <span class="report-value" [class.value-out]="outstanding() > 0" [class.value-in]="outstanding() === 0">
+            ₱ {{ fmt(outstanding()) }}
+          </span>
+        </div>
+      </section>
+
+      <!-- Pay button card -->
+      <section class="pay-card">
+        @if (error()) {
+          <p class="alert alert-error">{{ error() }}</p>
+        }
+        @if (success()) {
+          <p class="alert alert-success">{{ success() }}</p>
+        }
+
+        @if (outstanding() > 0) {
+          <div class="pay-info">
+            <div class="pay-icon">🛠</div>
+            <div>
+              <p class="pay-label">Amount due to developer</p>
+              <p class="pay-amount">₱ {{ fmt(outstanding()) }}</p>
+              <p class="pay-due">Due by {{ dueDate }}</p>
+            </div>
+          </div>
+          <button class="pay-btn" (click)="pay()" [disabled]="paying()">
+            {{ paying() ? 'Recording…' : 'Pay Developer' }}
+          </button>
+        } @else if (fee() === 0) {
+          <p class="status-text">No service fee yet — add finance entries first.</p>
+        } @else {
+          <div class="paid-badge">
+            <span class="paid-check">✓</span>
+            All service fees paid. Nothing due.
+          </div>
+        }
+      </section>
+
+      <!-- Payment history -->
+      <section class="list-section">
+        <h2 class="section-title">Payment History ({{ payments().length }})</h2>
+
+        @if (payments().length === 0) {
+          <p class="status-text">No payments recorded yet.</p>
+        } @else {
+          <div class="list">
+            @for (p of payments(); track p._id) {
+              <div class="item payment-item">
+                <div class="item-header">
+                  <span class="item-badge">💳 Payment</span>
+                  <span class="item-date">{{ formatDate(p.date) }}</span>
+                </div>
+                @if (p.note) {
+                  <p class="item-desc">{{ p.note }}</p>
+                }
+                <div class="item-footer">
+                  <span class="item-amount value-in">₱ {{ fmt(p.amount) }}</span>
+                  <span class="item-by">paid by {{ p.paidBy }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+    }
+
+  </div>
+</div>
