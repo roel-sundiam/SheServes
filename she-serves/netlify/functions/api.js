@@ -11,6 +11,7 @@ const scheduleRoutes      = require('./routes/schedule');
 const financeRoutes          = require('./routes/finance');
 const servicePaymentsRoutes  = require('./routes/service-payments');
 const { router: pushRoutes } = require('./routes/push');
+const coinsRoutes            = require('./routes/coins');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('/api', scheduleRoutes);
 app.use('/api', financeRoutes);
 app.use('/api', servicePaymentsRoutes);
 app.use('/api', pushRoutes);
+app.use('/api', coinsRoutes);
 
 let isConnected = false;
 async function connectDb() {
