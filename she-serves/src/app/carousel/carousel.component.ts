@@ -1,17 +1,22 @@
 import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ScheduleService, ScheduleEntry } from '../services/schedule.service';
+import { CoinsService } from '../services/coins.service';
+import { TournamentRegistrationService } from '../services/tournament-registration.service';
 
 @Component({
   selector: 'app-carousel',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './carousel.component.html',
   styleUrl: './carousel.component.css'
 })
 export class CarouselComponent implements OnInit, OnDestroy {
   private schedulesSvc = inject(ScheduleService);
+  private regSvc = inject(TournamentRegistrationService);
+  coins = inject(CoinsService);
 
   images = [
     { src: 'images/SheServes1.jfif', alt: 'SheServes 1' },
@@ -23,8 +28,17 @@ export class CarouselComponent implements OnInit, OnDestroy {
   currentIndex = signal(0);
   upcomingSchedule = signal<ScheduleEntry | null>(null);
   showScheduleModal = signal(false);
+  upcomingTournaments = signal<ScheduleEntry[]>([]);
   private timer: ReturnType<typeof setInterval> | null = null;
   private touchStartX = 0;
+
+  // Registration modal state
+  showRegModal       = signal(false);
+  selectedTournament = signal<ScheduleEntry | null>(null);
+  regForm = { playerName: '' };
+  regSubmitting = signal(false);
+  regSuccess    = signal('');
+  regError      = signal('');
 
   ngOnInit() {
     this.startAutoPlay();
@@ -32,12 +46,15 @@ export class CarouselComponent implements OnInit, OnDestroy {
     this.schedulesSvc.getAll().subscribe({
       next: (items) => {
         const now = Date.now();
-        const upcoming = items
+        const future = items
           .filter(item => new Date(item.startsAt).getTime() >= now)
-          .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0] ?? null;
+          .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
 
+        const upcoming = future[0] ?? null;
         this.upcomingSchedule.set(upcoming);
         this.showScheduleModal.set(!!upcoming);
+
+        this.upcomingTournaments.set(future.filter(item => item.category === 'tournament'));
       },
       error: () => {
         this.upcomingSchedule.set(null);
@@ -95,6 +112,46 @@ export class CarouselComponent implements OnInit, OnDestroy {
 
   closeScheduleModal() {
     this.showScheduleModal.set(false);
+  }
+
+  openRegModal(tournament: ScheduleEntry) {
+    this.selectedTournament.set(tournament);
+    this.regForm = { playerName: '' };
+    this.regSuccess.set('');
+    this.regError.set('');
+    this.showRegModal.set(true);
+  }
+
+  closeRegModal() {
+    this.showRegModal.set(false);
+    this.selectedTournament.set(null);
+  }
+
+  submitRegistration() {
+    const t = this.selectedTournament();
+    if (!t) return;
+
+    const playerName = this.regForm.playerName.trim();
+    if (!playerName) {
+      this.regError.set('Your name is required.');
+      return;
+    }
+
+    this.regSubmitting.set(true);
+    this.regError.set('');
+    this.regSuccess.set('');
+
+    this.regSvc.register({ tournamentId: t._id, playerName }).subscribe({
+      next: () => {
+        this.regSuccess.set("You're registered! See you on the court.");
+        this.regSubmitting.set(false);
+        this.regForm = { playerName: '' };
+      },
+      error: (err) => {
+        this.regError.set(err?.error?.message || 'Registration failed. Please try again.');
+        this.regSubmitting.set(false);
+      },
+    });
   }
 
   scheduleCategoryLabel(category: ScheduleEntry['category']): string {

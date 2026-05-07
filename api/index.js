@@ -9,7 +9,8 @@ const announcementsRoutes = require('./routes/announcements');
 const scheduleRoutes      = require('./routes/schedule');
 const financeRoutes          = require('./routes/finance');
 const servicePaymentsRoutes  = require('./routes/service-payments');
-const coinsRoutes            = require('./routes/coins');
+const coinsRoutes                    = require('./routes/coins');
+const tournamentRegistrationsRoutes  = require('./routes/tournament-registrations');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +38,7 @@ app.use('/api', scheduleRoutes);
 app.use('/api', financeRoutes);
 app.use('/api', servicePaymentsRoutes);
 app.use('/api', coinsRoutes);
+app.use('/api', tournamentRegistrationsRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

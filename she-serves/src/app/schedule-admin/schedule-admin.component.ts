@@ -32,11 +32,12 @@ export class ScheduleAdminComponent implements OnInit {
     { value: 'private-event', label: 'Private Event' },
   ];
 
-  form: { category: ScheduleCategory; eventDate: string; eventTime: string; place: string } = {
+  form: { category: ScheduleCategory; eventDate: string; eventTime: string; place: string; tournamentName: string } = {
     category: 'tournament',
     eventDate: '',
     eventTime: '',
     place: '',
+    tournamentName: '',
   };
 
   ngOnInit() {
@@ -64,6 +65,7 @@ export class ScheduleAdminComponent implements OnInit {
       eventDate: item.eventDate,
       eventTime: item.eventTime,
       place: item.place,
+      tournamentName: item.tournamentName || '',
     };
     this.error.set('');
     this.success.set('');
@@ -71,7 +73,7 @@ export class ScheduleAdminComponent implements OnInit {
 
   cancelEdit() {
     this.editingId.set(null);
-    this.form = { category: 'tournament', eventDate: '', eventTime: '', place: '' };
+    this.form = { category: 'tournament', eventDate: '', eventTime: '', place: '', tournamentName: '' };
     this.error.set('');
     this.success.set('');
   }
@@ -91,6 +93,7 @@ export class ScheduleAdminComponent implements OnInit {
       eventDate: this.form.eventDate,
       eventTime: this.form.eventTime,
       place: this.form.place.trim(),
+      tournamentName: this.form.category === 'tournament' ? this.form.tournamentName.trim() : '',
       createdBy: this.auth.currentUser() || 'admin',
     };
 
@@ -119,7 +122,7 @@ export class ScheduleAdminComponent implements OnInit {
           this.schedules.update(list =>
             [item, ...list].sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
           );
-          this.form = { category: 'tournament', eventDate: '', eventTime: '', place: '' };
+          this.form = { category: 'tournament', eventDate: '', eventTime: '', place: '', tournamentName: '' };
           this.success.set('Schedule saved successfully!');
           this.submitting.set(false);
           this.coins.deductAdmin('create schedule');

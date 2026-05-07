@@ -12,6 +12,7 @@ const financeRoutes          = require('./routes/finance');
 const servicePaymentsRoutes  = require('./routes/service-payments');
 const { router: pushRoutes } = require('./routes/push');
 const coinsRoutes            = require('./routes/coins');
+const tournamentRegistrationsRoutes = require('./routes/tournament-registrations');
 
 const app = express();
 
@@ -19,6 +20,7 @@ const allowedOrigins = [
   'http://localhost:4200',
   'https://she-serves-tc.netlify.app',
   'https://bo2tsundi.netlify.app',
+  'https://bo2t-sundi.vercel.app',
 ];
 app.use(cors({
   origin: (origin, callback) => {
@@ -51,6 +53,7 @@ app.use('/api', financeRoutes);
 app.use('/api', servicePaymentsRoutes);
 app.use('/api', pushRoutes);
 app.use('/api', coinsRoutes);
+app.use('/api', tournamentRegistrationsRoutes);
 
 let isConnected = false;
 async function connectDb() {

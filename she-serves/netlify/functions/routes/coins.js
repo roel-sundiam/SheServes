@@ -1,6 +1,7 @@
-const express     = require('express');
-const CoinBalance = require('../models/CoinBalance');
-const CoinRequest = require('../models/CoinRequest');
+const express          = require('express');
+const CoinBalance      = require('../models/CoinBalance');
+const CoinRequest      = require('../models/CoinRequest');
+const CoinTransaction  = require('../models/CoinTransaction');
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.get('/coins/balance', async (req, res) => {
 
 // POST /coins/visit — anonymous public page visit (1 coin)
 router.post('/coins/visit', async (req, res) => {
+  const { page } = req.body;
   try {
     const doc = await getOrCreate();
     if (doc.balance <= 0) {
@@ -29,15 +31,16 @@ router.post('/coins/visit', async (req, res) => {
     }
     doc.balance -= 1;
     await doc.save();
+    try { await CoinTransaction.create({ type: 'visit', amount: 1, reason: page || 'unknown' }); } catch {}
     res.json({ balance: doc.balance, locked: false });
   } catch (err) {
     res.status(500).json({ message: 'Failed to process visit.' });
   }
 });
 
-// POST /coins/deduct — admin action (body: { amount })
+// POST /coins/deduct — admin action (body: { amount, reason })
 router.post('/coins/deduct', async (req, res) => {
-  const { amount } = req.body;
+  const { amount, reason } = req.body;
   if (!amount || amount <= 0)
     return res.status(400).json({ message: 'Amount must be a positive number.' });
   try {
@@ -46,6 +49,7 @@ router.post('/coins/deduct', async (req, res) => {
       return res.status(402).json({ message: 'Insufficient coins.', balance: doc.balance });
     doc.balance -= amount;
     await doc.save();
+    try { await CoinTransaction.create({ type: 'admin', amount, reason: reason || 'unknown' }); } catch {}
     res.json({ balance: doc.balance });
   } catch (err) {
     res.status(500).json({ message: 'Failed to deduct coins.' });
@@ -120,6 +124,43 @@ router.post('/coins/requests/:id/reject', async (req, res) => {
     res.json(request);
   } catch (err) {
     res.status(500).json({ message: 'Failed to reject request.' });
+  }
+});
+
+// GET /coins/report/period?period=day|week|month
+router.get('/coins/report/period', async (req, res) => {
+  const { period = 'day' } = req.query;
+  const formats = { day: '%Y-%m-%d', week: '%G-W%V', month: '%Y-%m' };
+  const format = formats[period] || formats.day;
+  try {
+    const rows = await CoinTransaction.aggregate([
+      { $group: {
+          _id:   { $dateToString: { format, date: '$createdAt' } },
+          coins: { $sum: '$amount' },
+          count: { $sum: 1 },
+      }},
+      { $sort: { _id: 1 } },
+    ]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch period report.' });
+  }
+});
+
+// GET /coins/report/page
+router.get('/coins/report/page', async (req, res) => {
+  try {
+    const rows = await CoinTransaction.aggregate([
+      { $group: {
+          _id:   '$reason',
+          coins: { $sum: '$amount' },
+          count: { $sum: 1 },
+      }},
+      { $sort: { coins: -1 } },
+    ]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch page report.' });
   }
 });
 

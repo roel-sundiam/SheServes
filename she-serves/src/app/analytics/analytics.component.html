@@ -24,103 +24,190 @@
     <div class="toast">&#128276; {{ toast() }}</div>
   }
 
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab() === 'pages'" (click)="activeTab.set('pages')">Pages</button>
+    <button class="tab-btn" [class.active]="activeTab() === 'coins'" (click)="activeTab.set('coins')">Coins</button>
+  </div>
+
   <main class="content-shell">
-    @if (loading()) {
-      <section class="state-card">
-        <h2>Loading analytics...</h2>
-        <p>Retrieving data from the database.</p>
-      </section>
-    } @else if (error()) {
-      <section class="state-card error">
-        <h2>Could not load analytics</h2>
-        <p>{{ error() }}</p>
-      </section>
-    } @else {
-      <section class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">🌐</div>
-          <div>
-            <p class="stat-label">Total Visits</p>
-            <p class="stat-value">{{ data().totalVisits }}</p>
+
+    <!-- ── Pages Tab ── -->
+    @if (activeTab() === 'pages') {
+      @if (loading()) {
+        <section class="state-card">
+          <h2>Loading analytics...</h2>
+          <p>Retrieving data from the database.</p>
+        </section>
+      } @else if (error()) {
+        <section class="state-card error">
+          <h2>Could not load analytics</h2>
+          <p>{{ error() }}</p>
+        </section>
+      } @else {
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🌐</div>
+            <div>
+              <p class="stat-label">Total Visits</p>
+              <p class="stat-value">{{ data().totalVisits }}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👤</div>
+            <div>
+              <p class="stat-label">Anonymous Visits</p>
+              <p class="stat-value">{{ data().anonymousVisits }}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔐</div>
+            <div>
+              <p class="stat-label">Logged-in Visits</p>
+              <p class="stat-value">{{ data().loggedInVisits }}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔑</div>
+            <div>
+              <p class="stat-label">Recent Logins</p>
+              <p class="stat-value">{{ data().recentLogins.length }}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div>
+              <p class="stat-label">Registrations</p>
+              <p class="stat-value">{{ data().registrationCount }}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="data-section">
+          <h2 class="section-title">Pages Visited</h2>
+          <div class="table-container">
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Page</th>
+                    <th>Visits</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of data().visitsByPage; track p._id) {
+                    <tr [class.row-updated]="newPageIds().has(p._id)">
+                      <td>{{ p._id }}</td>
+                      <td>{{ p.count }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="data-section">
+          <h2 class="section-title">Recent Admin Logins</h2>
+          <div class="table-container">
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Login Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (log of data().recentLogins; track log._id) {
+                    <tr [class.row-updated]="newLoginIds().has(log._id)">
+                      <td>{{ log.username }}</td>
+                      <td>{{ log.loginAt | date: 'medium' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      }
+    }
+
+    <!-- ── Coins Tab ── -->
+    @if (activeTab() === 'coins') {
+      @if (coinError()) {
+        <section class="state-card error">
+          <h2>Could not load coin report</h2>
+          <p>{{ coinError() }}</p>
+        </section>
+      }
+
+      <section class="data-section">
+        <div class="section-header">
+          <h2 class="section-title">Consumption by Period</h2>
+          <div class="period-tabs">
+            <button class="period-tab" [class.active]="coinPeriod() === 'day'"   (click)="setPeriod('day')">Daily</button>
+            <button class="period-tab" [class.active]="coinPeriod() === 'week'"  (click)="setPeriod('week')">Weekly</button>
+            <button class="period-tab" [class.active]="coinPeriod() === 'month'" (click)="setPeriod('month')">Monthly</button>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">👤</div>
-          <div>
-            <p class="stat-label">Anonymous Visits</p>
-            <p class="stat-value">{{ data().anonymousVisits }}</p>
+        @if (coinByPeriod().length === 0) {
+          <p class="empty-note">No transactions recorded yet.</p>
+        } @else {
+          <div class="table-container">
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Period</th>
+                    <th>Coins Used</th>
+                    <th>Transactions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of coinByPeriod(); track row._id) {
+                    <tr>
+                      <td>{{ row._id }}</td>
+                      <td>{{ row.coins }}</td>
+                      <td>{{ row.count }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🔐</div>
-          <div>
-            <p class="stat-label">Logged-in Visits</p>
-            <p class="stat-value">{{ data().loggedInVisits }}</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🔑</div>
-          <div>
-            <p class="stat-label">Recent Logins</p>
-            <p class="stat-value">{{ data().recentLogins.length }}</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">📋</div>
-          <div>
-            <p class="stat-label">Registrations</p>
-            <p class="stat-value">{{ data().registrationCount }}</p>
-          </div>
-        </div>
+        }
       </section>
 
       <section class="data-section">
-        <h2 class="section-title">Pages Visited</h2>
-        <div class="table-container">
-          <div class="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Page</th>
-                  <th>Visits</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (p of data().visitsByPage; track p._id) {
-                  <tr [class.row-updated]="newPageIds().has(p._id)">
-                    <td>{{ p._id }}</td>
-                    <td>{{ p.count }}</td>
+        <h2 class="section-title">Consumption by Page / Action</h2>
+        @if (coinByPage().length === 0) {
+          <p class="empty-note">No transactions recorded yet.</p>
+        } @else {
+          <div class="table-container">
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Page / Action</th>
+                    <th>Coins Used</th>
+                    <th>Transactions</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (row of coinByPage(); track row._id) {
+                    <tr>
+                      <td>{{ row._id }}</td>
+                      <td>{{ row.coins }}</td>
+                      <td>{{ row.count }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section class="data-section">
-        <h2 class="section-title">Recent Admin Logins</h2>
-        <div class="table-container">
-          <div class="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Login Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (log of data().recentLogins; track log._id) {
-                  <tr [class.row-updated]="newLoginIds().has(log._id)">
-                    <td>{{ log.username }}</td>
-                    <td>{{ log.loginAt | date: 'medium' }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
+        }
       </section>
     }
+
   </main>
 </div>

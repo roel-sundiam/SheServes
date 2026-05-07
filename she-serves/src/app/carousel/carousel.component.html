@@ -1,3 +1,13 @@
+@if (coins.locked()) {
+  <div class="coins-overlay">
+    <div class="coins-overlay-card">
+      <p class="coins-overlay-icon">🔒</p>
+      <p class="coins-overlay-title">Service Unavailable</p>
+      <p class="coins-overlay-msg">This service is temporarily unavailable. Please contact the administrator.</p>
+    </div>
+  </div>
+}
+
 <div class="carousel" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
   @if (showScheduleModal() && upcomingSchedule(); as schedule) {
     <div class="schedule-modal-backdrop" (click)="closeScheduleModal()">
@@ -37,3 +47,67 @@
     }
   </div>
 </div>
+
+<!-- ── Tournament Section ── -->
+@if (upcomingTournaments().length > 0) {
+  <section class="tournament-section">
+    <h2 class="tournament-section-title">Upcoming Tournaments</h2>
+    <div class="tournament-list">
+      @for (t of upcomingTournaments(); track t._id) {
+        <article class="tournament-card">
+          <div class="tc-badge">Tournament</div>
+          @if (t.tournamentName) {
+            <p class="tc-name">{{ t.tournamentName }}</p>
+          }
+          <p class="tc-date">{{ formatDateTime(t.startsAt) }}</p>
+          <p class="tc-place">📍 {{ t.place }}</p>
+          <button class="tc-register-btn" type="button" (click)="openRegModal(t)">
+            Register Now
+          </button>
+        </article>
+      }
+    </div>
+  </section>
+}
+
+<!-- ── Registration Modal ── -->
+@if (showRegModal()) {
+  @if (selectedTournament(); as tournament) {
+    <div class="reg-modal-backdrop" (click)="closeRegModal()">
+      <section class="reg-modal" (click)="$event.stopPropagation()">
+        <div class="modal-topline">
+          <span class="modal-badge">🏆 Tournament Registration</span>
+          <button class="modal-close" type="button" (click)="closeRegModal()">×</button>
+        </div>
+
+        <h2 class="modal-title">{{ formatDateTime(tournament.startsAt) }}</h2>
+        <p class="reg-modal-place">📍 {{ tournament.place }}</p>
+
+        @if (regSuccess()) {
+          <p class="reg-alert reg-alert-success">{{ regSuccess() }}</p>
+          <div class="modal-footer">
+            <button class="modal-action" type="button" (click)="closeRegModal()">Close</button>
+          </div>
+        } @else {
+          @if (regError()) {
+            <p class="reg-alert reg-alert-error">{{ regError() }}</p>
+          }
+          <div class="reg-field">
+            <label class="reg-label" for="reg-name">Full Name *</label>
+            <input id="reg-name" class="reg-input" type="text" [(ngModel)]="regForm.playerName" placeholder="e.g. Maria Santos" />
+          </div>
+          <div class="modal-footer">
+            <button
+              class="modal-action"
+              type="button"
+              (click)="submitRegistration()"
+              [disabled]="regSubmitting()"
+            >
+              {{ regSubmitting() ? 'Submitting...' : 'Submit Registration' }}
+            </button>
+          </div>
+        }
+      </section>
+    </div>
+  }
+}

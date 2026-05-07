@@ -25,6 +25,19 @@
         </select>
       </div>
 
+      @if (form.category === 'tournament') {
+        <div class="field">
+          <label class="label" for="sched-name">Tournament Name</label>
+          <input
+            id="sched-name"
+            class="input"
+            type="text"
+            placeholder="e.g. SheServes Open 2025"
+            [(ngModel)]="form.tournamentName"
+            maxlength="150" />
+        </div>
+      }
+
       <div class="field-grid">
         <div class="field">
           <label class="label" for="sched-date">Date</label>
@@ -73,6 +86,9 @@
                 <span class="item-badge">{{ formatCategory(item.category) }}</span>
                 <span class="item-date">{{ formatDate(item.eventDate) }}</span>
               </div>
+              @if (item.tournamentName) {
+                <p class="item-name">{{ item.tournamentName }}</p>
+              }
               <p class="item-time">🕒 {{ formatTime(item.eventTime) }}</p>
               <p class="item-place">📍 {{ item.place }}</p>
               <div class="item-footer">

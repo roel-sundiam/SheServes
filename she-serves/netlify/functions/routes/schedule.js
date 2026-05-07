@@ -14,6 +14,9 @@ function validatePayload(payload) {
   const eventTime = String(payload.eventTime || '').trim();
   const place = String(payload.place || '').trim();
   const createdBy = String(payload.createdBy || 'admin').trim();
+  const tournamentName = category === 'tournament'
+    ? String(payload.tournamentName || '').trim()
+    : '';
 
   if (!ALLOWED_CATEGORIES.has(category)) {
     return { error: 'category must be one of: tournament, open-play, private-event.' };
@@ -42,6 +45,7 @@ function validatePayload(payload) {
       eventDate,
       eventTime,
       place,
+      tournamentName,
       startsAt,
       createdBy: createdBy || 'admin',
     },
@@ -64,7 +68,8 @@ router.post('/schedules', async (req, res) => {
   }
 
   try {
-    const schedule = await Schedule.create(value);
+    const doc = new Schedule(value, { strict: false });
+    const schedule = await doc.save();
     res.status(201).json(schedule);
     const label = schedule.category === 'tournament' ? '🏆 Tournament'
                 : schedule.category === 'open-play'  ? '🎾 Open Play'
@@ -81,7 +86,7 @@ router.put('/schedules/:id', async (req, res) => {
     return res.status(400).json({ message: error });
   }
   try {
-    const updated = await Schedule.findByIdAndUpdate(req.params.id, value, { new: true });
+    const updated = await Schedule.findByIdAndUpdate(req.params.id, { $set: value }, { new: true, strict: false });
     if (!updated) return res.status(404).json({ message: 'Schedule not found.' });
     res.json(updated);
   } catch (err) {

@@ -22,6 +22,12 @@ const scheduleSchema = new mongoose.Schema({
     trim: true,
     maxlength: 150,
   },
+  tournamentName: {
+    type: String,
+    trim: true,
+    maxlength: 150,
+    default: '',
+  },
   startsAt: {
     type: Date,
     required: true,
@@ -34,4 +40,5 @@ const scheduleSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.models.Schedule || mongoose.model('Schedule', scheduleSchema);
+delete mongoose.models.Schedule;
+module.exports = mongoose.model('Schedule', scheduleSchema);

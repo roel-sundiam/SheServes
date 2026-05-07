@@ -10,6 +10,7 @@ export interface ScheduleEntry {
   eventDate: string;
   eventTime: string;
   place: string;
+  tournamentName: string;
   startsAt: string;
   createdBy: string;
   createdAt: string;
@@ -24,11 +25,11 @@ export class ScheduleService {
     return this.http.get<ScheduleEntry[]>(`${this.API}/schedules`);
   }
 
-  create(payload: { category: ScheduleCategory; eventDate: string; eventTime: string; place: string; createdBy: string }) {
+  create(payload: { category: ScheduleCategory; eventDate: string; eventTime: string; place: string; tournamentName?: string; createdBy: string }) {
     return this.http.post<ScheduleEntry>(`${this.API}/schedules`, payload);
   }
 
-  update(id: string, payload: { category: ScheduleCategory; eventDate: string; eventTime: string; place: string; createdBy: string }) {
+  update(id: string, payload: { category: ScheduleCategory; eventDate: string; eventTime: string; place: string; tournamentName?: string; createdBy: string }) {
     return this.http.put<ScheduleEntry>(`${this.API}/schedules/${id}`, payload);
   }
 

@@ -25,12 +25,19 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   newLoginIds  = signal<Set<string>>(new Set());
   toast        = signal('');
 
+  activeTab    = signal<'pages' | 'coins'>('pages');
+  coinPeriod   = signal<'day' | 'week' | 'month'>('day');
+  coinByPeriod = signal<{ _id: string; coins: number; count: number }[]>([]);
+  coinByPage   = signal<{ _id: string; coins: number; count: number }[]>([]);
+  coinError    = signal('');
+
   private refreshInterval: any;
   private toastTimer: any;
 
   ngOnInit() {
     this.loadData();
-    this.refreshInterval = setInterval(() => this.loadData(), 30000);
+    this.loadCoinReports();
+    this.refreshInterval = setInterval(() => { this.loadData(); this.loadCoinReports(); }, 30000);
   }
 
   ngOnDestroy() {
@@ -40,6 +47,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   refresh() {
     this.loadData();
+    this.loadCoinReports();
   }
 
   private loadData() {
@@ -116,6 +124,25 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     clearTimeout(this.toastTimer);
     this.toast.set(message);
     this.toastTimer = setTimeout(() => this.toast.set(''), 4000);
+  }
+
+  setPeriod(p: 'day' | 'week' | 'month') {
+    this.coinPeriod.set(p);
+    this.analytics.getCoinReportPeriod(p).subscribe({
+      next: (rows) => this.coinByPeriod.set(rows),
+    });
+  }
+
+  private loadCoinReports() {
+    this.coinError.set('');
+    this.analytics.getCoinReportPeriod(this.coinPeriod()).subscribe({
+      next:  (rows) => this.coinByPeriod.set(rows),
+      error: (err)  => this.coinError.set(`Period report error: ${err?.status ?? 'unknown'} — ${err?.error?.message ?? err?.message ?? 'check console'}`),
+    });
+    this.analytics.getCoinReportPage().subscribe({
+      next:  (rows) => this.coinByPage.set(rows),
+      error: (err)  => this.coinError.set(`Page report error: ${err?.status ?? 'unknown'} — ${err?.error?.message ?? err?.message ?? 'check console'}`),
+    });
   }
 
   logout() {

@@ -26,6 +26,10 @@ export class AnnouncementsService {
     return this.http.post<Announcement>(`${this.API}/announcements`, payload);
   }
 
+  update(id: string, payload: { title: string; message: string; type: string; eventDate: string; place: string }) {
+    return this.http.put<Announcement>(`${this.API}/announcements/${id}`, payload);
+  }
+
   delete(id: string) {
     return this.http.delete<{ message: string }>(`${this.API}/announcements/${id}`);
   }

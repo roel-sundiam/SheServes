@@ -10,14 +10,17 @@ import { AnnouncementsComponent } from './announcements/announcements.component'
 import { ScheduleAdminComponent } from './schedule-admin/schedule-admin.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { FinanceAdminComponent } from './finance-admin/finance-admin.component';
+import { TournamentAdminComponent } from './tournament-admin/tournament-admin.component';
+import { MembersComponent } from './members/members.component';
 import { authGuard } from './services/auth.guard';
 import { superAdminGuard } from './services/superadmin.guard';
 import { coinsGuard } from './coins.guard';
 
 export const routes: Routes = [
-  { path: '',                    component: CarouselComponent },
+  { path: '',                    component: DashboardComponent,           canActivate: [coinsGuard] },
+  { path: 'carousel',            component: CarouselComponent,            canActivate: [coinsGuard] },
   { path: 'login',               component: LoginComponent },
-  { path: 'dashboard',           component: DashboardComponent,           canActivate: [coinsGuard] },
+  { path: 'dashboard',           redirectTo: '',                          pathMatch: 'full' },
   { path: 'admin',               component: AdminHomeComponent,         canActivate: [authGuard] },
   { path: 'registrations',       component: RegistrationsComponent,     canActivate: [authGuard] },
   { path: 'analytics',           component: AnalyticsComponent,         canActivate: [authGuard, superAdminGuard] },
@@ -26,4 +29,6 @@ export const routes: Routes = [
   { path: 'schedule-admin',      component: ScheduleAdminComponent,      canActivate: [authGuard] },
   { path: 'schedule',            component: ScheduleComponent,            canActivate: [coinsGuard] },
   { path: 'finance-admin',       component: FinanceAdminComponent,         canActivate: [authGuard] },
+  { path: 'tournament-admin',    component: TournamentAdminComponent,      canActivate: [authGuard] },
+  { path: 'members',             component: MembersComponent,              canActivate: [coinsGuard] },
 ];

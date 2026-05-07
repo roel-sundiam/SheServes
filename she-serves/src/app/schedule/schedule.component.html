@@ -55,6 +55,10 @@
                 <span class="date">{{ formatDate(item.eventDate) }}</span>
               </div>
 
+              @if (item.category === 'tournament' && item.tournamentName) {
+                <p class="tournament-name">{{ item.tournamentName }}</p>
+              }
+
               <div class="detail-row">
                 <span class="detail-label">Time</span>
                 <p class="time">{{ formatTime(item.eventTime) }}</p>

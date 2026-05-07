@@ -24,7 +24,14 @@ export class ScheduleComponent implements OnInit {
     this.push.clearBadge();
     this.svc.getAll().subscribe({
       next: (data) => {
-        this.schedules.set(data);
+        const now = Date.now();
+        const upcoming = data.filter(item => {
+          const d = item.startsAt
+            ? new Date(item.startsAt)
+            : new Date(`${item.eventDate}T${item.eventTime || '00:00'}`);
+          return d.getTime() >= now;
+        });
+        this.schedules.set(upcoming);
         this.loading.set(false);
       },
       error: () => {

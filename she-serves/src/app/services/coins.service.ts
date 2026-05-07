@@ -21,10 +21,10 @@ export class CoinsService {
     } catch {}
   }
 
-  async visitPage(): Promise<void> {
+  async visitPage(page: string): Promise<void> {
     try {
       const res = await firstValueFrom(
-        this.http.post<{ balance: number; locked: boolean }>(`${this.API}/coins/visit`, {})
+        this.http.post<{ balance: number; locked: boolean }>(`${this.API}/coins/visit`, { page })
       );
       this.balance.set(res.balance);
       this.locked.set(res.locked);
@@ -34,7 +34,7 @@ export class CoinsService {
   async deductAdmin(reason: string): Promise<void> {
     try {
       const res = await firstValueFrom(
-        this.http.post<{ balance: number }>(`${this.API}/coins/deduct`, { amount: 5 })
+        this.http.post<{ balance: number }>(`${this.API}/coins/deduct`, { amount: 5, reason })
       );
       this.balance.set(res.balance);
     } catch (err: any) {

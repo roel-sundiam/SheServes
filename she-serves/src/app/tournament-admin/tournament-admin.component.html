@@ -1,0 +1,148 @@
+<div class="page">
+  <header class="header">
+    <a routerLink="/admin" class="back-btn" aria-label="Back to Admin">&#8592;</a>
+    <h1 class="title">Tournament Config</h1>
+    <button class="logout-btn" type="button" (click)="logout()">Logout</button>
+  </header>
+
+  <div class="content">
+    @if (error()) {
+      <p class="alert alert-error">{{ error() }}</p>
+    }
+    @if (editSuccess()) {
+      <p class="alert alert-success">{{ editSuccess() }}</p>
+    }
+
+    @if (loading()) {
+      <p class="status-text">Loading tournaments...</p>
+    } @else if (tournaments().length === 0) {
+      <p class="status-text">
+        No tournaments configured yet.
+        <a routerLink="/schedule-admin">Add one via Schedule Config.</a>
+      </p>
+    } @else {
+      <section class="list-section">
+        <h2 class="section-title">Tournaments ({{ tournaments().length }})</h2>
+        <div class="list">
+          @for (t of tournaments(); track t._id) {
+            <div class="item">
+
+              <!-- ── Header row ── -->
+              <div class="item-header">
+                <div class="item-meta">
+                  @if (t.tournamentName) {
+                    <span class="item-name">{{ t.tournamentName }}</span>
+                  }
+                  <span class="item-date">{{ formatDate(t.eventDate) }}</span>
+                  <span class="item-time">{{ formatTime(t.eventTime) }}</span>
+                  <span class="item-place">📍 {{ t.place }}</span>
+                </div>
+                <div class="item-actions">
+                  <button class="edit-btn" type="button" (click)="startEdit(t)">Edit</button>
+                  <button class="delete-tournament-btn" type="button" (click)="deleteTournament(t)">Delete</button>
+                  <button class="expand-btn" type="button" (click)="toggleExpand(t)">
+                    @if (t.expanded) {
+                      Hide
+                    } @else {
+                      Registrations
+                      @if (t.registrations.length > 0) {
+                        <span class="reg-badge">{{ t.registrations.length }}</span>
+                      }
+                    }
+                  </button>
+                </div>
+              </div>
+
+              <!-- ── Inline Edit Form ── -->
+              @if (t.editing) {
+                <div class="edit-panel">
+                  <h3 class="edit-title">Edit Tournament</h3>
+
+                  @if (t.editError) {
+                    <p class="alert alert-error">{{ t.editError }}</p>
+                  }
+
+                  <div class="edit-field">
+                    <label class="edit-label" [for]="'name-' + t._id">Tournament Name</label>
+                    <input
+                      [id]="'name-' + t._id"
+                      class="edit-input"
+                      type="text"
+                      [(ngModel)]="t.editName"
+                      placeholder="e.g. SheServes Open 2025"
+                      maxlength="150" />
+                  </div>
+
+                  <div class="edit-field-grid">
+                    <div class="edit-field">
+                      <label class="edit-label" [for]="'date-' + t._id">Date</label>
+                      <input
+                        [id]="'date-' + t._id"
+                        class="edit-input"
+                        type="date"
+                        [(ngModel)]="t.editDate" />
+                    </div>
+                    <div class="edit-field">
+                      <label class="edit-label" [for]="'time-' + t._id">Time</label>
+                      <input
+                        [id]="'time-' + t._id"
+                        class="edit-input"
+                        type="time"
+                        [(ngModel)]="t.editTime" />
+                    </div>
+                  </div>
+
+                  <div class="edit-field">
+                    <label class="edit-label" [for]="'place-' + t._id">Place</label>
+                    <input
+                      [id]="'place-' + t._id"
+                      class="edit-input"
+                      type="text"
+                      [(ngModel)]="t.editPlace"
+                      placeholder="e.g. Rizal Memorial Coliseum"
+                      maxlength="150" />
+                  </div>
+
+                  <div class="edit-actions">
+                    <button
+                      class="save-btn"
+                      type="button"
+                      (click)="submitEdit(t)"
+                      [disabled]="t.editSubmitting">
+                      {{ t.editSubmitting ? 'Saving...' : 'Save Changes' }}
+                    </button>
+                    <button class="cancel-btn" type="button" (click)="cancelEdit(t)">Cancel</button>
+                  </div>
+                </div>
+              }
+
+              <!-- ── Registrations Panel ── -->
+              @if (t.expanded) {
+                <div class="reg-panel">
+                  @if (t.regLoading) {
+                    <p class="reg-status">Loading...</p>
+                  } @else if (t.regError) {
+                    <p class="alert alert-error">{{ t.regError }}</p>
+                  } @else if (t.registrations.length === 0) {
+                    <p class="reg-status">No registrations yet.</p>
+                  } @else {
+                    <p class="reg-count-label">{{ t.registrations.length }} registered player(s)</p>
+                    @for (reg of t.registrations; track reg._id) {
+                      <div class="reg-row">
+                        <div class="reg-info">
+                          <p class="reg-name">{{ reg.playerName }}</p>
+                        </div>
+                        <button class="remove-btn" type="button" (click)="deleteRegistration(t, reg._id)">Remove</button>
+                      </div>
+                    }
+                  }
+                </div>
+              }
+
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</div>

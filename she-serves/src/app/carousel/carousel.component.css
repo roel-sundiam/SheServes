@@ -249,6 +249,32 @@
   }
 }
 
+/* ── Coins locked overlay ── */
+.coins-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.coins-overlay-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+
+.coins-overlay-icon  { font-size: 2.4rem; margin: 0 0 0.5rem; }
+.coins-overlay-title { font-size: 1.15rem; font-weight: 700; color: #2f2130; margin: 0 0 0.5rem; }
+.coins-overlay-msg   { font-size: 0.9rem; color: #666; margin: 0; line-height: 1.5; }
+
 /* Small phones */
 @media (max-width: 480px) {
   .arrow {
@@ -270,4 +296,162 @@
     padding: 8px 14px;
     font-size: 0.85rem;
   }
+}
+
+/* ── Tournament Section ── */
+.tournament-section {
+  padding: 36px 16px 48px;
+  background: linear-gradient(180deg, #1a3a3a 0%, #0d2020 100%);
+}
+
+.tournament-section-title {
+  max-width: 720px;
+  margin: 0 auto 20px;
+  color: #c8e8e0;
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.tournament-list {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tournament-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(200, 232, 224, 0.18);
+  border-left: 4px solid #4db89a;
+  border-radius: 16px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tc-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(77, 184, 154, 0.2);
+  color: #4db89a;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.tc-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #e8f6f2;
+}
+
+.tc-date {
+  margin: 0;
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #e8f6f2;
+}
+
+.tc-place {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #9ecfc4;
+}
+
+.tc-register-btn {
+  align-self: flex-start;
+  margin-top: 6px;
+  background: linear-gradient(125deg, #4db89a, #2e8b6e);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 9px 22px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(46, 139, 110, 0.35);
+  transition: filter 0.2s;
+}
+.tc-register-btn:hover { filter: brightness(1.08); }
+
+/* ── Registration Modal ── */
+.reg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(10, 20, 20, 0.72);
+  backdrop-filter: blur(5px);
+}
+
+.reg-modal {
+  width: min(480px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  padding: 24px 20px 22px;
+  background: linear-gradient(180deg, #eef2f6 0%, #e6ecf3 100%);
+  box-shadow: 0 24px 50px rgba(10, 20, 20, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.reg-modal-place {
+  margin: 4px 0 16px;
+  font-size: 0.88rem;
+  color: #507878;
+}
+
+.reg-field {
+  margin-bottom: 14px;
+}
+
+.reg-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #507878;
+  margin-bottom: 5px;
+}
+
+.reg-input {
+  width: 100%;
+  border: 1.5px solid #c0d0d0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #282828;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+.reg-input:focus { border-color: #285050; }
+
+.reg-alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  margin-bottom: 14px;
+}
+.reg-alert-error   { background: #fee; color: #c00; border: 1px solid #fcc; }
+.reg-alert-success { background: #efe; color: #270; border: 1px solid #cec; }
+
+@media (max-width: 480px) {
+  .tournament-section { padding: 28px 12px 36px; }
+  .tournament-card { padding: 16px 14px; }
+  .reg-modal { padding: 20px 16px 18px; }
 }

@@ -100,18 +100,61 @@
                 <span class="item-badge">{{ item.type === 'invitation' ? '✉️ Invitation' : '📣 Announcement' }}</span>
                 <span class="item-date">{{ formatDate(item.createdAt) }}</span>
               </div>
-              <h3 class="item-title">{{ item.title }}</h3>
-              <p class="item-msg">{{ item.message }}</p>
-              @if (item.eventDate) {
-                <p class="item-event-date">🗓 {{ formatDateTime(item.eventDate) }}</p>
+
+              @if (editingId() === item._id) {
+                <!-- ── Inline Edit Form ── -->
+                <div class="edit-panel">
+                  @if (editError()) {
+                    <p class="alert alert-error">{{ editError() }}</p>
+                  }
+
+                  <div class="type-toggle" style="margin-bottom:12px">
+                    <button class="type-btn" [class.active]="editForm.type === 'announcement'" (click)="editForm.type = 'announcement'">📣 Announcement</button>
+                    <button class="type-btn" [class.active]="editForm.type === 'invitation'"   (click)="editForm.type = 'invitation'">✉️ Invitation</button>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Title</label>
+                    <input class="input" type="text" [(ngModel)]="editForm.title" maxlength="100" />
+                  </div>
+                  <div class="field">
+                    <label class="label">Message</label>
+                    <textarea class="textarea" rows="4" [(ngModel)]="editForm.message" maxlength="500"></textarea>
+                  </div>
+                  <div class="field">
+                    <label class="label">Date &amp; Time <span class="optional">(optional)</span></label>
+                    <input class="input" type="datetime-local" [(ngModel)]="editForm.eventDate" />
+                  </div>
+                  <div class="field">
+                    <label class="label">Place <span class="optional">(optional)</span></label>
+                    <input class="input" type="text" [(ngModel)]="editForm.place" maxlength="150" />
+                  </div>
+
+                  <div class="edit-actions">
+                    <button class="save-btn" (click)="submitEdit()" [disabled]="editSubmitting()">
+                      {{ editSubmitting() ? 'Saving…' : 'Save' }}
+                    </button>
+                    <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+                  </div>
+                </div>
+              } @else {
+                <!-- ── Read View ── -->
+                <h3 class="item-title">{{ item.title }}</h3>
+                <p class="item-msg">{{ item.message }}</p>
+                @if (item.eventDate) {
+                  <p class="item-event-date">🗓 {{ formatDateTime(item.eventDate) }}</p>
+                }
+                @if (item.place) {
+                  <p class="item-place">📍 {{ item.place }}</p>
+                }
+                <div class="item-footer">
+                  <span class="item-by">by {{ item.createdBy }}</span>
+                  <div class="item-actions">
+                    <button class="edit-btn" (click)="startEdit(item)">Edit</button>
+                    <button class="delete-btn" (click)="remove(item._id)">Delete</button>
+                  </div>
+                </div>
               }
-              @if (item.place) {
-                <p class="item-place">📍 {{ item.place }}</p>
-              }
-              <div class="item-footer">
-                <span class="item-by">by {{ item.createdBy }}</span>
-                <button class="delete-btn" (click)="remove(item._id)">Delete</button>
-              </div>
             </div>
           }
         </div>

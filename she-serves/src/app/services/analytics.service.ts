@@ -24,4 +24,16 @@ export class AnalyticsService {
   getAnalytics() {
     return this.http.get<any>(`${this.API}/analytics`);
   }
+
+  getCoinReportPeriod(period: 'day' | 'week' | 'month') {
+    return this.http.get<{ _id: string; coins: number; count: number }[]>(
+      `${this.API}/coins/report/period?period=${period}`
+    );
+  }
+
+  getCoinReportPage() {
+    return this.http.get<{ _id: string; coins: number; count: number }[]>(
+      `${this.API}/coins/report/page`
+    );
+  }
 }

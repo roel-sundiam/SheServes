@@ -1,0 +1,106 @@
+<div class="members-shell">
+  @if (coins.locked()) {
+    <div class="coins-overlay">
+      <div class="coins-overlay-card">
+        <p class="coins-overlay-icon">🔒</p>
+        <p class="coins-overlay-title">Service Unavailable</p>
+        <p class="coins-overlay-msg">This service is temporarily unavailable. Please contact the administrator.</p>
+      </div>
+    </div>
+  }
+
+  <!-- Header -->
+  <header class="topbar">
+    <a routerLink="/dashboard" class="back-btn" aria-label="Back">&#8592;</a>
+    <div class="title-wrap">
+      <p class="eyebrow">SheServes Tennis Club</p>
+      <h1>Our Members</h1>
+    </div>
+    <div class="topbar-right">
+      @if (!loading() && allNames().length > 0) {
+        <span class="count-badge">{{ allNames().length }}</span>
+      }
+    </div>
+  </header>
+
+  <!-- Sticky search bar -->
+  <div class="search-bar">
+    <div class="search-inner">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input
+        class="search-input"
+        type="search"
+        placeholder="Search members…"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        autocomplete="off"
+      />
+      @if (isSearching()) {
+        <span class="search-result-count">{{ filteredNames().length }} found</span>
+      }
+    </div>
+  </div>
+
+  <!-- Scrollable content -->
+  <main class="members-main">
+
+    <!-- Loading skeletons -->
+    @if (loading()) {
+      <div class="skeleton-list">
+        @for (_ of [1,2,3,4,5,6,7,8,9,10]; track $index) {
+          <div class="skeleton-row">
+            <div class="skel skel-avatar"></div>
+            <div class="skel skel-name" [style.width.px]="80 + ($index % 5) * 24"></div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- No search results -->
+    @else if (filteredNames().length === 0 && isSearching()) {
+      <div class="state-card">
+        <div class="state-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF4D8D" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <p class="state-title">No results for "{{ searchQuery() }}"</p>
+        <p class="state-sub">Try a different spelling or partial name.</p>
+      </div>
+    }
+
+    <!-- No members at all -->
+    @else if (allNames().length === 0) {
+      <div class="state-card">
+        <div class="state-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF4D8D" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <p class="state-title">No members yet</p>
+        <p class="state-sub">Members appear here once registrations are submitted.</p>
+      </div>
+    }
+
+    <!-- Alphabetical groups -->
+    @else {
+      <div class="list-container">
+        @for (group of alphaGroups(); track group.letter) {
+          <!-- Letter divider -->
+          <div class="alpha-divider">
+            <span class="alpha-letter">{{ group.letter }}</span>
+            <span class="alpha-count">{{ group.names.length }}</span>
+          </div>
+
+          <!-- Member rows -->
+          @for (name of group.names; track name; let i = $index) {
+            <div class="member-row">
+              <div class="avatar" [style.background]="avatarColor(name)">
+                {{ initials(name) }}
+              </div>
+              <span class="member-name">{{ name }}</span>
+              <span class="row-num">#{{ filteredNames().indexOf(name) + 1 }}</span>
+            </div>
+          }
+        }
+      </div>
+    }
+
+  </main>
+</div>
